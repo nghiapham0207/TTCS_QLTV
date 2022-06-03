@@ -18,8 +18,9 @@ public class Main extends javax.swing.JFrame {
     /**
      * Creates new form Main
      */
-    private ListLogin taoLogin;
-    
+    private ListLogin login;
+    private DatabaseRoles databaseRoles;
+
     public Main() {
         initComponents();
     }
@@ -51,7 +52,7 @@ public class Main extends javax.swing.JFrame {
         jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton1.setFocusable(false);
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setPreferredSize(new java.awt.Dimension(75, 30));
+        jButton1.setPreferredSize(new java.awt.Dimension(100, 30));
         jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -60,19 +61,24 @@ public class Main extends javax.swing.JFrame {
         });
         jToolBar1.add(jButton1);
 
-        jButton2.setText("jButton2");
+        jButton2.setText("Database Roles");
         jButton2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setPreferredSize(new java.awt.Dimension(75, 30));
+        jButton2.setPreferredSize(new java.awt.Dimension(100, 30));
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
         jToolBar1.add(jButton2);
 
         jButton3.setText("jButton3");
         jButton3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setPreferredSize(new java.awt.Dimension(75, 30));
+        jButton3.setPreferredSize(new java.awt.Dimension(100, 30));
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton3);
 
@@ -90,22 +96,38 @@ public class Main extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-             for (Component component : jTabbedPane1.getComponents()) {
-            if (component instanceof ListLogin) {
-                jTabbedPane1.setSelectedComponent(component);
-                return;
+            for (Component component : jTabbedPane1.getComponents()) {
+                if (component instanceof ListLogin) {
+                    jTabbedPane1.setSelectedComponent(component);
+                    return;
+                }
             }
-        }
-        taoLogin=new ListLogin();
-        taoLogin.setVisible(true);
-        jTabbedPane1.addTab("Tạo Tài Khoản", taoLogin);
-        jTabbedPane1.setSelectedComponent(taoLogin);
+            login = new ListLogin();
+            login.setVisible(true);
+            jTabbedPane1.addTab("Security Logins", login);
+            jTabbedPane1.setSelectedComponent(login);
         }
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            for (Component component : jTabbedPane1.getComponents()) {
+                if (component instanceof DatabaseRoles) {
+                    jTabbedPane1.setSelectedComponent(component);
+                    return;
+                }
+            }
+            databaseRoles = new DatabaseRoles();
+            databaseRoles.setVisible(true);
+            jTabbedPane1.addTab("Database Roles", databaseRoles);
+            jTabbedPane1.setSelectedComponent(databaseRoles);
+        }
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments

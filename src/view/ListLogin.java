@@ -44,6 +44,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
                 login.getDefaultDatabaseName()
             });
         }
+        tableListLogin.setModel(defaultTableModel);
     }
 
     /**
@@ -168,7 +169,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
 
     private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
         // TODO add your handling code here:
-        System.out.println(evt.toString());
+        System.out.println("ListLogin: "+evt.getID());
         Main.removeTab((JTabbedPane) getParent(), getClass().toString());
     }//GEN-LAST:event_formInternalFrameClosing
 

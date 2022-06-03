@@ -45,3 +45,24 @@ begin
 
 	exec sp_droplogin @loginame
 end
+
+go
+create proc sp_getlistmember
+@role_name sysname
+as
+begin
+	select m.name as [Role Members] from sys.database_role_members rm 
+	inner join sys.database_principals r on rm.role_principal_id = r.principal_id
+	inner join sys.database_principals m on rm.member_principal_id = m.principal_id
+	where r.name = @role_name
+end
+
+--create view
+go
+create view v_membertoadd
+as
+select name, 'User' as [type] from sys.sysusers where issqlrole = 0 and uid not in (1, 3, 4)
+union
+select name, 'Database Role' as [type] from sys.database_principals where is_fixed_role = 0 and type = 'R'
+
+--select * from v_membertoadd

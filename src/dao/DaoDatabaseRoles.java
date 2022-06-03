@@ -5,30 +5,28 @@
  */
 package dao;
 
-import java.util.List;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import model.Login;
+import model.Member;
 import server.KetNoi;
-import view.ListLogin;
 
 /**
  *
  * @author nghia
  */
-public class DaoLogin {
+public class DaoDatabaseRoles {
 
-    public static List<Login> getList() {
-        List<Login> list = new ArrayList<>();
-        String sql = "select loginname, u.name, dbname as defdb from sys.syslogins l inner join sys.sysusers u on l.sid = u.sid where uid != 1";
-//        String sql = "select loginname, name, dbname as defdb from sys.syslogins where sid != 1 and hasaccess = 1 and isntname = 0 and name not like '##%'";
+    public static List<String> getList() {
+        String sql = "select name from sys.sysusers where issqlrole = 1";
+        List<String> list = new ArrayList<>();
         Connection connection = KetNoi.layKetNoi();
         Statement statement;
         ResultSet resultSet;
@@ -36,7 +34,7 @@ public class DaoLogin {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
-                list.add(new Login(resultSet.getString("loginname"), resultSet.getString("name"), resultSet.getString("defdb")));
+                list.add(resultSet.getString("name"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
@@ -50,73 +48,70 @@ public class DaoLogin {
         return list;
     }
 
-    public static void insert(String name, String pwd, String defDB, boolean policy,
-            boolean exp, boolean mustChange) {
-        String sql = "exec sp_newLogin ?, ?, ?, ?, ?, ?";
-        Connection connection = KetNoi.layKetNoi();
+    public static void removeMember(String roleName, String memberName) {
+        String sql = "exec sp_droprolemember ?, ?";
+        Connection connection;
         PreparedStatement ps;
+        connection = KetNoi.layKetNoi();
         try {
             ps = connection.prepareCall(sql);
-            ps.setString(1, name);
-            ps.setString(2, pwd);
-            ps.setString(3, defDB);
-            ps.setBoolean(4, policy);
-            ps.setBoolean(5, exp);
-            ps.setBoolean(6, mustChange);
+            ps.setString(1, roleName);
+            ps.setString(2, memberName);
             ps.execute();
             JOptionPane.showMessageDialog(null, "Success!");
-            ListLogin.loadListLogin(getList());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
             try {
                 connection.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DaoDatabaseRoles.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-
-    public static void delete(String loginName, String nameInDB) {
-        String sql = "exec sp_removeLogin ?, ?";
-        Connection connection = KetNoi.layKetNoi();
+    
+    public static void insert(String roleName){
+        String sql = "exec sp_addrole ?";
+        Connection connection;
         PreparedStatement ps;
+        connection = KetNoi.layKetNoi();
         try {
             ps = connection.prepareCall(sql);
-            ps.setString(1, loginName);
-            ps.setString(2, nameInDB);
+            ps.setString(1, roleName);
             ps.execute();
             JOptionPane.showMessageDialog(null, "Success!");
-            ListLogin.loadListLogin(getList());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
             try {
                 connection.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DaoDatabaseRoles.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-
-    public static void changePwd(String newPwd, String loginName) {
-        String sql = "exec sp_password NUll, ?, ?";
-        Connection connection = KetNoi.layKetNoi();
+    
+    public static void addMember(String roleName, List<Member> list){
+        String sql="exec sp_addrolemember ?, ?";
+        Connection connection;
         PreparedStatement ps;
+        connection = KetNoi.layKetNoi();
+//        int count=0;
         try {
             ps = connection.prepareCall(sql);
-            ps.setString(1, newPwd);
-            ps.setString(2, loginName);
-            ps.execute();
-            JOptionPane.showMessageDialog(null, "Success!");
-            ListLogin.loadListLogin(getList());
+            for (Member member : list) {
+                ps.setString(1, roleName);
+                ps.setString(2, member.getName());
+                ps.execute();
+            }
+            JOptionPane.showMessageDialog(null, "Success!\nRefresh to update!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
             try {
                 connection.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DaoDatabaseRoles.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
