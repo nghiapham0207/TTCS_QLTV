@@ -72,6 +72,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         jButtonRemoveMember = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jButtonNewRole = new javax.swing.JButton();
 
         setClosable(true);
@@ -166,6 +167,8 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             }
         });
 
+        jButton1.setText("Grant");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -182,7 +185,8 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -205,7 +209,8 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonRemoveMember)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonRefresh)))
+                    .addComponent(jButtonRefresh)
+                    .addComponent(jButton1)))
         );
 
         jButtonNewRole.setText("New Database Role");
@@ -316,6 +321,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButtonNewRole;
     private javax.swing.JButton jButtonRefresh;
