@@ -66,3 +66,40 @@ union
 select name, 'Database Role' as [type] from sys.database_principals where is_fixed_role = 0 and type = 'R'
 
 --select * from v_membertoadd
+
+--create proc backup
+go
+create proc sp_backupdb_full
+@dbname nvarchar(128),
+@path nvarchar(128) 
+as
+begin
+	declare @exec_stmt nvarchar(4000)
+	set @exec_stmt = 'backup database ' + quotename(@dbname) + 
+	' to disk = ' + quotename(@path, '''')
+	exec (@exec_stmt)
+end
+
+go
+create proc sp_backupdb_diff
+@dbname nvarchar(128),
+@path nvarchar(128)
+as
+begin
+	declare @exec_stmt nvarchar(4000)
+	set @exec_stmt = 'backup database ' + quotename(@dbname) + 
+	' to disk = ' + quotename(@path, '''') + ' with differential'
+	exec (@exec_stmt)
+end
+
+go
+create proc sp_backuplog
+@dbname nvarchar(128),
+@path nvarchar(128)
+as
+begin
+	declare @exec_stmt nvarchar(4000)
+	set @exec_stmt = 'backup log ' + quotename(@dbname) + 
+	' to disk = ' + quotename(@path, '''')
+	exec (@exec_stmt)
+end
