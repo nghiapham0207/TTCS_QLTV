@@ -6,7 +6,9 @@
 package view;
 
 import dao.DaoBackupDB;
+import dao.DaoDatabase;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
@@ -25,9 +27,18 @@ public class Backup extends javax.swing.JInternalFrame {
 
     public Backup() {
         initComponents();
+        loadComboBoxDB(DaoDatabase.getList());
         defaultDisk();
     }
 
+    private void loadComboBoxDB(List<String> list) {
+        jComboBoxDB.removeAllItems();
+        for (String string : list) {
+            jComboBoxDB.addItem(string);
+        }
+        jComboBoxDB.setSelectedItem("QLTV");
+    }
+    
     private void defaultDisk() {
         String defPath = "C:\\Program Files\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER\\MSSQL\\Backup\\";
         String dbname = (String) jComboBoxDB.getSelectedItem();
@@ -101,7 +112,11 @@ public class Backup extends javax.swing.JInternalFrame {
 
         jLabel2.setText("Database:");
 
-        jComboBoxDB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "QLTV" }));
+        jComboBoxDB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxDBItemStateChanged(evt);
+            }
+        });
 
         jLabel1.setText("Source");
 
@@ -216,13 +231,14 @@ public class Backup extends javax.swing.JInternalFrame {
                     .addComponent(jLabel7)
                     .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jButtonAdd)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4))
+                        .addComponent(jButton4)
+                        .addGap(0, 53, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -276,7 +292,7 @@ public class Backup extends javax.swing.JInternalFrame {
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(0, 3, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButtonOK)))
@@ -302,9 +318,9 @@ public class Backup extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -380,6 +396,11 @@ public class Backup extends javax.swing.JInternalFrame {
             pathChooser.setVisible(true);
         }
     }//GEN-LAST:event_jButtonAddMouseClicked
+
+    private void jComboBoxDBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxDBItemStateChanged
+        // TODO add your handling code here:
+        defaultDisk();
+    }//GEN-LAST:event_jComboBoxDBItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -9,6 +9,7 @@ import dao.DaoDatabaseRoles;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Member;
 
@@ -24,11 +25,11 @@ public class AddMemberToRole extends javax.swing.JFrame {
     private DefaultTableModel dtm;
     private List<Member> addMembers;
     private String roleName;
-    
+
     public AddMemberToRole(String roleName) {
         initComponents();
         loadMembers(dao.DaoMembers.getListMemberToAdd());
-        this.roleName=roleName;
+        this.roleName = roleName;
         addMembers = new ArrayList<>();
     }
 
@@ -168,6 +169,27 @@ public class AddMemberToRole extends javax.swing.JFrame {
     private void jButtonOKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonOKMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
+            Member newMember;
+            dtm = (DefaultTableModel) jTableMembers.getModel();
+            for (int i = 0; i < dtm.getRowCount(); i++) {
+                boolean select = (boolean) jTableMembers.getValueAt(i, 0);
+                if (select) {
+                    String name = (String) jTableMembers.getValueAt(i, 1);
+                    String type = (String) jTableMembers.getValueAt(i, 2);
+                    newMember = new Member(name, type, true);
+                    System.out.println("chọn member " + newMember.getName());
+                    addMembers.add(newMember);
+                }
+            }
+
+            if (addMembers.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No member selected!");
+                return;
+            }
+            System.out.println("danh sách member đã chọn:");
+            for (Member addMember : addMembers) {
+                System.out.println(addMember.getName());
+            }
             DaoDatabaseRoles.addMember(roleName, addMembers);
             this.dispose();
         }
@@ -176,15 +198,29 @@ public class AddMemberToRole extends javax.swing.JFrame {
     private void jTableMembersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMembersMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            int row = jTableMembers.getSelectedRow();
-            if (row != -1) {
-                boolean select = (boolean) jTableMembers.getValueAt(row, 0);
-                if (select) {
-                    String name = (String) jTableMembers.getValueAt(row, 1);
-                    String type = (String) jTableMembers.getValueAt(row, 2);
-                    addMembers.add(new Member(name, type, true));
-                }
-            }
+//            int row = jTableMembers.getSelectedRow();
+//            Member newMember;
+//            if (row != -1) {
+//                String name = (String) jTableMembers.getValueAt(row, 1);
+//                String type = (String) jTableMembers.getValueAt(row, 2);
+//                newMember = new Member(name, type, true);
+//                boolean select = (boolean) jTableMembers.getValueAt(row, 0);
+//                if (select) {
+//                    System.out.println("chọn member " + newMember.getName());
+//                    addMembers.add(newMember);
+//                } else {
+//                    for (int i = 0; i < addMembers.size(); i++) {
+//                        if (addMembers.get(i).getName().equals(newMember.getName())) {
+//                            addMembers.remove(i);
+//                        }
+//                    }
+////                    if (addMembers.remove(newMember)) {
+////                        System.out.println("bỏ chọn item " + newMember.getName());
+////                    } else {
+////                        System.out.println("không thể bỏ item " + newMember.getName());
+////                    }
+//                }
+//            }
         }
     }//GEN-LAST:event_jTableMembersMouseClicked
 
