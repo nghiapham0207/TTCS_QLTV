@@ -108,6 +108,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        tableListLogin.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableListLogin.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tableListLoginKeyPressed(evt);

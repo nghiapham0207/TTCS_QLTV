@@ -103,3 +103,29 @@ begin
 	' to disk = ' + quotename(@path, '''')
 	exec (@exec_stmt)
 end
+
+go
+create proc sp_backupsets
+@dbname nvarchar(128),
+@physical_device_name nvarchar(128)
+as
+begin
+select case [type]
+		when 'D' then 'Full'
+		when 'I' then 'Differential'
+		when 'L' then 'Transaction Log'
+		else [type]
+	end 
+as backuptype, physical_device_name, database_name, position, backup_start_date, backup_finish_date
+from msdb.dbo.backupset
+INNER JOIN msdb.dbo.backupmediafamily ON backupset.media_set_id = backupmediafamily.media_set_id
+where 
+database_name = @dbname
+--physical_device_name = @physical_device_name
+and backup_finish_date >= (select top 1 backup_finish_date
+                             from msdb.dbo.backupset b1
+                             where b1.database_name = @dbname AND
+                               b1.type = 'D'
+                             order by b1.backup_finish_date desc)
+order by [type], backup_finish_date
+end
