@@ -119,7 +119,11 @@ public class Restore extends javax.swing.JInternalFrame {
                                     + " move N'" + dbLog + "' to N'" + logFile + "'";
                             full = full.concat(move);
                         }
-                        full =full.concat(", norecovery, nounload");
+                        if (i != checkedCount - 1) {
+                            full = full.concat(", norecovery, nounload");
+                        } else {
+                            full = full.concat(", nounload");
+                        }
                         if (jCheckBoxReplace.isSelected()) {
                             full = full.concat(", replace");
                         }
@@ -128,16 +132,23 @@ public class Restore extends javax.swing.JInternalFrame {
                     case "Differential" -> {
                         diff = " restore database [" + dbName
                                 + "] from disk = N'" + path
-                                + "' with file = " + position
-                                + " , norecovery"
-                                + ", nounload";
+                                + "' with file = " + position;
+                        if (i != checkedCount - 1) {
+                            diff = diff.concat(", norecovery, nounload");
+                        } else {
+                            diff = diff.concat(", nounload");
+                        }
                         execStmt = execStmt.concat(diff);
                     }
                     case "Transaction Log" -> {
                         log = " restore log [" + dbName
                                 + "] from disk = N'" + path
-                                + "' with file = " + position
-                                + ", nounload";
+                                + "' with file = " + position;
+                        if (i != checkedCount - 1) {
+                            log = log.concat(", norecovery, nounload");
+                        } else {
+                            log = log.concat(", nounload");
+                        }
                         execStmt = execStmt.concat(log);
                     }
                 }
@@ -702,7 +713,7 @@ public class Restore extends javax.swing.JInternalFrame {
             cl.show(jPanel2, "card3");
             String pathDisk = jTextFieldDevice.getText().trim();
             System.out.println("load table database files");
-            System.out.println("load file is only: "+pathDisk);
+            System.out.println("load file is only: " + pathDisk);
             if (!pathDisk.isEmpty()) {
                 loadDBFiles(DaoRestore.getDBFiles(pathDisk));
             }
@@ -816,7 +827,7 @@ public class Restore extends javax.swing.JInternalFrame {
                 String startDate = (String) jTable1.getValueAt(rowCount - 1, 5);
                 jTextFieldTimeLine.setText(startDate);
             }
-            
+
             //set up tab files
 //            dbNameFromBak = (String) jComboBoxDBName.getSelectedItem();
 //            System.out.println("load table database file");
