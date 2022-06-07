@@ -16,6 +16,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import model.BackupSet;
+import model.DatabaseFile;
 
 /**
  *
@@ -47,6 +48,7 @@ public class Restore extends javax.swing.JInternalFrame {
                 backupSet.getStartDate(),
                 backupSet.getFinishDate(),});
         });
+        jTable1.setModel(dtm);
     }
 
     public void loadComboBoxDBName(List<String> list) {
@@ -59,6 +61,23 @@ public class Restore extends javax.swing.JInternalFrame {
             });
             jComboBoxDBName.setSelectedIndex(0);
         }
+    }
+
+    private void loadDBFiles(List<DatabaseFile> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+        dtm = (DefaultTableModel) jTableDBFiles.getModel();
+        dtm.setRowCount(0);
+        list.forEach(databaseFile -> {
+            dtm.addRow(new Object[]{
+                databaseFile.getLogicalName(),
+                databaseFile.getFileType(),
+                databaseFile.getOriginalFileName(),
+                databaseFile.getRestoreAs()
+            });
+        });
+        jTableDBFiles.setModel(dtm);
     }
 
     public void restore() {
@@ -86,19 +105,23 @@ public class Restore extends javax.swing.JInternalFrame {
                 String backupType = (String) jTable1.getValueAt(i, 1);
                 switch (backupType) {
                     case "Full" -> {
+                        full = " restore database [" + dbName
+                                + "] from disk = N'" + path
+                                + "' with file = " + position;
+
+                        if (jCheckBoxRelocate.isSelected()) {
+                            String dataFile = jTextFieldDataFile.getText().trim();
+                            String logFile = jTextFieldLogFile.getText().trim();
+                            String db = (String) jTableDBFiles.getValueAt(0, 0);
+                            String dbLog = (String) jTableDBFiles.getValueAt(1, 0);
+
+                            String move = ", move N'" + db + "' to N'" + dataFile + "' , "
+                                    + " move N'" + dbLog + "' to N'" + logFile + "'";
+                            move = move.concat(", norecovery, nounload ");
+                            full = full.concat(move);
+                        }
                         if (jCheckBoxReplace.isSelected()) {
-                            full = " restore database [" + dbName
-                                    + "] from disk = N'" + path
-                                    + "' with file = " + position
-                                    + " , norecovery"
-                                    + ", nounload "
-                                    + ", replace";
-                        } else {
-                            full = " restore database [" + dbName
-                                    + "] from disk = N'" + path
-                                    + "' with file = " + position
-                                    + " , norecovery"
-                                    + ", nounload ";
+                            full = full.concat(", replace");
                         }
                         execStmt = execStmt.concat(full);
                     }
@@ -161,6 +184,17 @@ public class Restore extends javax.swing.JInternalFrame {
         jLabel7 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         jPanel4 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
+        jCheckBoxRelocate = new javax.swing.JCheckBox();
+        jLabel10 = new javax.swing.JLabel();
+        jTextFieldDataFile = new javax.swing.JTextField();
+        jButtonBrowserData = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        jTextFieldLogFile = new javax.swing.JTextField();
+        jButtonBrowserLog = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTableDBFiles = new javax.swing.JTable();
         jPanel6 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
@@ -421,137 +455,234 @@ public class Restore extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
         jPanel2.add(jPanel3, "card2");
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 708, Short.MAX_VALUE)
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 337, Short.MAX_VALUE)
-        );
+        jLabel9.setText("Restore database files as");
 
-        jPanel2.add(jPanel4, "card3");
+        jCheckBoxRelocate.setText("Relocate all files to folder");
+        jCheckBoxRelocate.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCheckBoxRelocateItemStateChanged(evt);
+            }
+        });
 
-        jLabel8.setText("Restore options:");
+        jLabel10.setText("Data file folder:");
 
-        jCheckBoxReplace.setText("Overwrite the existing database (WITH REPLACE)");
+        jTextFieldDataFile.setText("D:\\Program Files\\");
+            jTextFieldDataFile.setEnabled(false);
 
-        jCheckBox2.setText("Preserve the replication settings (WITH KEEP_REPLICATION)");
+            jButtonBrowserData.setText("Browser");
+            jButtonBrowserData.setEnabled(false);
 
-        jCheckBox3.setText("Restrict access to the restored database (WITH RESTRICTED_USER)");
+            jLabel11.setText("Log file folder:");
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSeparator4)
+            jTextFieldLogFile.setText("D:\\Program Files\\");
+                jTextFieldLogFile.setEnabled(false);
+
+                jButtonBrowserLog.setText("Browser");
+                jButtonBrowserLog.setEnabled(false);
+
+                jTableDBFiles.setModel(new javax.swing.table.DefaultTableModel(
+                    new Object [][] {
+
+                    },
+                    new String [] {
+                        "Logical File Name", "File Type", "Origin File Name", "Restore As"
+                    }
+                ) {
+                    boolean[] canEdit = new boolean [] {
+                        false, true, true, false
+                    };
+
+                    public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        return canEdit [columnIndex];
+                    }
+                });
+                jScrollPane2.setViewportView(jTableDBFiles);
+                if (jTableDBFiles.getColumnModel().getColumnCount() > 0) {
+                    jTableDBFiles.getColumnModel().getColumn(0).setPreferredWidth(120);
+                    jTableDBFiles.getColumnModel().getColumn(0).setMaxWidth(120);
+                    jTableDBFiles.getColumnModel().getColumn(1).setPreferredWidth(80);
+                    jTableDBFiles.getColumnModel().getColumn(1).setMaxWidth(80);
+                }
+
+                javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+                jPanel4.setLayout(jPanel4Layout);
+                jPanel4Layout.setHorizontalGroup(
+                    jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator5))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxRelocate)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addGap(22, 22, 22)
+                                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(jLabel11)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(jTextFieldLogFile)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jButtonBrowserLog))
+                                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                                .addComponent(jLabel10)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jTextFieldDataFile)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(jButtonBrowserData))))))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE))
                         .addContainerGap())
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox2)
-                            .addComponent(jCheckBoxReplace)
-                            .addComponent(jCheckBox3))
-                        .addContainerGap(297, Short.MAX_VALUE))))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBoxReplace)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox3)
-                .addContainerGap(243, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(jPanel6, "card4");
-
-        jButton6.setText("Cancel");
-        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton6MouseClicked(evt);
-            }
-        });
-
-        jButtonOK.setText("OK");
-        jButtonOK.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButtonOKMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonOK)
-                .addGap(18, 18, 18)
-                .addComponent(jButton6)
-                .addContainerGap())
-        );
-
-        jPanel5Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton6, jButtonOK});
-
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton6)
-                    .addComponent(jButtonOK))
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                );
+                jPanel4Layout.setVerticalGroup(
+                    jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSeparator5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
+                        .addComponent(jCheckBoxRelocate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(jTextFieldDataFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonBrowserData))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(jButtonBrowserLog)
+                            .addComponent(jTextFieldLogFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                        .addContainerGap())
+                );
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+                jPanel2.add(jPanel4, "card3");
+
+                jLabel8.setText("Restore options:");
+
+                jCheckBoxReplace.setText("Overwrite the existing database (WITH REPLACE)");
+
+                jCheckBox2.setText("Preserve the replication settings (WITH KEEP_REPLICATION)");
+                jCheckBox2.setEnabled(false);
+
+                jCheckBox3.setText("Restrict access to the restored database (WITH RESTRICTED_USER)");
+                jCheckBox3.setEnabled(false);
+
+                javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+                jPanel6.setLayout(jPanel6Layout);
+                jPanel6Layout.setHorizontalGroup(
+                    jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jSeparator4)
+                                .addContainerGap())
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBox2)
+                                    .addComponent(jCheckBoxReplace)
+                                    .addComponent(jCheckBox3))
+                                .addContainerGap(297, Short.MAX_VALUE))))
+                );
+                jPanel6Layout.setVerticalGroup(
+                    jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBoxReplace)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jCheckBox3)
+                        .addContainerGap(248, Short.MAX_VALUE))
+                );
+
+                jPanel2.add(jPanel6, "card4");
+
+                jButton6.setText("Cancel");
+                jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        jButton6MouseClicked(evt);
+                    }
+                });
+
+                jButtonOK.setText("OK");
+                jButtonOK.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        jButtonOKMouseClicked(evt);
+                    }
+                });
+
+                javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+                jPanel5.setLayout(jPanel5Layout);
+                jPanel5Layout.setHorizontalGroup(
+                    jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonOK)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton6)
+                        .addContainerGap())
+                );
+
+                jPanel5Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton6, jButtonOK});
+
+                jPanel5Layout.setVerticalGroup(
+                    jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton6)
+                            .addComponent(jButtonOK))
+                        .addContainerGap())
+                );
+
+                javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+                getContentPane().setLayout(layout);
+                layout.setHorizontalGroup(
+                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())
+                );
+                layout.setVerticalGroup(
+                    layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
+                );
+
+                pack();
+            }// </editor-fold>//GEN-END:initComponents
 
     private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
         // TODO add your handling code here:
@@ -570,6 +701,12 @@ public class Restore extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel2, "card3");
+            String pathDisk = jTextFieldDevice.getText().trim();
+            System.out.println("load table database files");
+            System.out.println("load file is only: "+pathDisk);
+            if (!pathDisk.isEmpty()) {
+                loadDBFiles(DaoRestore.getDBFiles(pathDisk));
+            }
         }
     }//GEN-LAST:event_jButton4MouseClicked
 
@@ -607,6 +744,11 @@ public class Restore extends javax.swing.JInternalFrame {
                             String startDate = (String) jTable1.getValueAt(rowCount - 1, 5);
                             jTextFieldTimeLine.setText(startDate);
                         }
+
+                        //set tab files
+                        String dbDesName = (String) jComboBoxDBDestination.getSelectedItem();
+                        jTextFieldDataFile.setText(jTextFieldDataFile.getText() + dbDesName + ".bak");
+                        jTextFieldLogFile.setText(jTextFieldLogFile.getText() + dbDesName + "_log.trn");
                     }
                 }
             }
@@ -674,6 +816,14 @@ public class Restore extends javax.swing.JInternalFrame {
                 String startDate = (String) jTable1.getValueAt(rowCount - 1, 5);
                 jTextFieldTimeLine.setText(startDate);
             }
+            
+            //set up tab files
+//            dbNameFromBak = (String) jComboBoxDBName.getSelectedItem();
+//            System.out.println("load table database file");
+//            System.out.println("load file is only: "+dbNameFromBak);
+//            if (dbNameFromBak != null) {
+//                loadDBFiles(DaoRestore.getDBFiles(dbNameFromBak));
+//            }
         }
     }//GEN-LAST:event_jComboBoxDBNameItemStateChanged
 
@@ -693,6 +843,23 @@ public class Restore extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jButtonOKMouseClicked
 
+    private void jCheckBoxRelocateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBoxRelocateItemStateChanged
+        // TODO add your handling code here:
+        if (jCheckBoxRelocate.isSelected()) {
+            jTextFieldDataFile.setEnabled(true);
+            jTextFieldLogFile.setEnabled(true);
+
+            jButtonBrowserData.setEnabled(true);
+            jButtonBrowserLog.setEnabled(true);
+        } else {
+            jTextFieldDataFile.setEnabled(false);
+            jTextFieldLogFile.setEnabled(false);
+
+            jButtonBrowserData.setEnabled(false);
+            jButtonBrowserLog.setEnabled(false);
+        }
+    }//GEN-LAST:event_jCheckBoxRelocateItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
@@ -703,13 +870,18 @@ public class Restore extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButtonBrowserData;
+    private javax.swing.JButton jButtonBrowserLog;
     private javax.swing.JButton jButtonOK;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
+    private javax.swing.JCheckBox jCheckBoxRelocate;
     private javax.swing.JCheckBox jCheckBoxReplace;
     private javax.swing.JComboBox<String> jComboBoxDBDestination;
     private javax.swing.JComboBox<String> jComboBoxDBName;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -717,6 +889,7 @@ public class Restore extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -725,12 +898,17 @@ public class Restore extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTableDBFiles;
+    private javax.swing.JTextField jTextFieldDataFile;
     private javax.swing.JTextField jTextFieldDevice;
+    private javax.swing.JTextField jTextFieldLogFile;
     private javax.swing.JTextField jTextFieldTimeLine;
     // End of variables declaration//GEN-END:variables
 }

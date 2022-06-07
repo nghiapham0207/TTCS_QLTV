@@ -357,18 +357,21 @@ public class Backup extends javax.swing.JInternalFrame {
                     System.out.println("path will backup: " + path);
                     DaoBackupDB.full(dbName, path);
                 }
+                JOptionPane.showMessageDialog(null, "Success!");
             } else if (type.equalsIgnoreCase("differential")) {
                 for (int i = 0; i < jList1.getModel().getSize(); i++) {
                     path = jList1.getModel().getElementAt(i);
                     System.out.println("path will backup: " + path);
                     DaoBackupDB.differential(dbName, path);
                 }
+                JOptionPane.showMessageDialog(null, "Success!");
             } else {
                 for (int i = 0; i < jList1.getModel().getSize(); i++) {
                     path = jList1.getModel().getElementAt(i);
                     System.out.println("path will backup: " + path);
                     DaoBackupDB.log(dbName, path);
                 }
+                JOptionPane.showMessageDialog(null, "Success!");
             }
         }
     }//GEN-LAST:event_jButtonOKMouseClicked

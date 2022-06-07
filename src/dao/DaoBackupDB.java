@@ -27,7 +27,7 @@ public class DaoBackupDB {
             ps.setString(1, dbName);
             ps.setString(2, path);
             ps.execute();
-            JOptionPane.showMessageDialog(null, "Success!");
+            //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
@@ -49,7 +49,7 @@ public class DaoBackupDB {
             ps.setString(1, dbName);
             ps.setString(2, path);
             ps.execute();
-            JOptionPane.showMessageDialog(null, "Success!");
+            //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
@@ -71,7 +71,7 @@ public class DaoBackupDB {
             ps.setString(1, dbName);
             ps.setString(2, path);
             ps.execute();
-            JOptionPane.showMessageDialog(null, "Success!");
+            //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
