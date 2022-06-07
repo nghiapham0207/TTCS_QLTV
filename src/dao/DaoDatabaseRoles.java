@@ -69,16 +69,20 @@ public class DaoDatabaseRoles {
             }
         }
     }
-    
-    public static void insert(String roleName){
-        String sql = "exec sp_addrole ?";
+
+    public static void insert(String roleName) {
+//        String sql = "exec sp_addrole ?";
+        String sql = "USE [QLTV] " + " GO " + "CREATE ROLE [" + roleName + "]" + " GO ";
         Connection connection;
-        PreparedStatement ps;
+        Statement s;
+//        PreparedStatement ps;
         connection = KetNoi.layKetNoi();
         try {
-            ps = connection.prepareCall(sql);
-            ps.setString(1, roleName);
-            ps.execute();
+//            ps = connection.prepareCall(sql);
+//            ps.setString(1, roleName);
+//            ps.execute();
+            s = connection.createStatement();
+            s.execute(sql);
             JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -90,9 +94,9 @@ public class DaoDatabaseRoles {
             }
         }
     }
-    
-    public static void addMember(String roleName, List<Member> list){
-        String sql="exec sp_addrolemember ?, ?";
+
+    public static void addMember(String roleName, List<Member> list) {
+        String sql = "exec sp_addrolemember ?, ?";
         Connection connection;
         PreparedStatement ps;
         connection = KetNoi.layKetNoi();

@@ -89,7 +89,9 @@ public class DaoRestore {
 
     //You are connected to the database you are trying to restore.
     public static void takeOffline(String dbName) {
-        String sql = "use master alter database " + dbName + " set offline";
+//        String sql = "use [master] alter database " + dbName + " set offline";
+        String sql = "use [master] alter database [" + dbName
+                + "] set single_user with rollback immediate";
         Connection connection = KetNoi.layKetNoi();
         Statement s;
         try {

@@ -32,7 +32,12 @@ begin
 
 	exec (@exec_stmt) --ok
 
-	exec sp_grantdbaccess @loginame, @loginame
+	set @exec_stmt = ''
+
+	set @exec_stmt = 'create user '+quotename(@loginame) + ' for login '+quotename(@loginame)
+
+	exec (@exec_stmt)
+	--exec sp_grantdbaccess @loginame, @loginame
 end
 
 go

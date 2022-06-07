@@ -106,7 +106,7 @@ public class Backup extends javax.swing.JInternalFrame {
                 log = "backup log [" + dbName
                         + "] to " + backUpTo + " = N'"
                         + path + "'"
-                        + " with differential, noformat ";
+                        + " with noformat ";
                 if (jRadioButtonAppend.isSelected()) {
                     log = log.concat(" , noinit ");
                 }

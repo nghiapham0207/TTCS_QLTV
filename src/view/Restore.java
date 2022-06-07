@@ -81,7 +81,7 @@ public class Restore extends javax.swing.JInternalFrame {
     }
 
     public void restore() {
-        String execStmt = "Use master ";
+        String execStmt = "Use [master] ";
         String dbName = (String) jComboBoxDBDestination.getSelectedItem();
         int checkedCount = 0;
         boolean restore;
@@ -117,9 +117,9 @@ public class Restore extends javax.swing.JInternalFrame {
 
                             String move = ", move N'" + db + "' to N'" + dataFile + "' , "
                                     + " move N'" + dbLog + "' to N'" + logFile + "'";
-                            move = move.concat(", norecovery, nounload ");
                             full = full.concat(move);
                         }
+                        full =full.concat(", norecovery, nounload");
                         if (jCheckBoxReplace.isSelected()) {
                             full = full.concat(", replace");
                         }
@@ -130,19 +130,20 @@ public class Restore extends javax.swing.JInternalFrame {
                                 + "] from disk = N'" + path
                                 + "' with file = " + position
                                 + " , norecovery"
-                                + ", nounload ";
+                                + ", nounload";
                         execStmt = execStmt.concat(diff);
                     }
                     case "Transaction Log" -> {
                         log = " restore log [" + dbName
                                 + "] from disk = N'" + path
                                 + "' with file = " + position
-                                + ", nounload ";
+                                + ", nounload";
                         execStmt = execStmt.concat(log);
                     }
                 }
             }
         }
+//        execStmt =execStmt.concat(" go");
         System.out.println(execStmt);
         DaoRestore.execNonQuery(execStmt);
     }
@@ -303,7 +304,7 @@ public class Restore extends javax.swing.JInternalFrame {
 
         jComboBoxDBDestination.setEditable(true);
 
-        jButton3.setText("Take Offline");
+        jButton3.setText("Single user");
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton3MouseClicked(evt);
