@@ -7,6 +7,7 @@ package view;
 
 import dao.DaoBackupDB;
 import dao.DaoDatabase;
+import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -24,21 +25,24 @@ public class Backup extends javax.swing.JInternalFrame {
      */
     private static DefaultListModel dlm;
     public static String pathToBackup;
+    private final CardLayout cl;
+    public static int hasError;
 
     public Backup() {
         initComponents();
         loadComboBoxDB(DaoDatabase.getList());
         defaultDisk();
+        cl = (CardLayout) jPanel4.getLayout();
     }
 
     private void loadComboBoxDB(List<String> list) {
         jComboBoxDB.removeAllItems();
-        for (String string : list) {
+        list.forEach(string -> {
             jComboBoxDB.addItem(string);
-        }
+        });
         jComboBoxDB.setSelectedItem("QLTV");
     }
-    
+
     private void defaultDisk() {
         String defPath = "C:\\Program Files\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER\\MSSQL\\Backup\\";
         String dbname = (String) jComboBoxDB.getSelectedItem();
@@ -55,6 +59,69 @@ public class Backup extends javax.swing.JInternalFrame {
         jList1.setSelectedIndex(0);
     }
 
+    public String generateSQL(String path) {
+        String type = (String) jComboBoxType.getSelectedItem();
+        String dbName = (String) jComboBoxDB.getSelectedItem();
+        //code mới
+        String execStmt = "use master ";
+        String backUpTo = "disk";
+        String full;
+        String diff;
+        String log;
+        String nameBackup;
+        switch (type) {
+            case "Full" -> {
+                full = "backup database [" + dbName
+                        + "] to " + backUpTo + " = N'"
+                        + path + "'"
+                        + " with noformat ";
+                if (jRadioButtonAppend.isSelected()) {
+                    full = full.concat(" , noinit ");
+                }
+                if (jRadioButtonOverwrite.isSelected()) {
+                    full = full.concat(" , init ");
+                }
+                nameBackup = ", name = N'" + dbName + " Full Database Backup '";
+                full = full.concat(nameBackup);
+                full = full.concat(", skip, norewind, nounload");
+                execStmt = execStmt.concat(full);
+            }
+            case "Differential" -> {
+                diff = "backup database [" + dbName
+                        + "] to " + backUpTo + " = N'"
+                        + path + "'"
+                        + " with differential, noformat ";
+                if (jRadioButtonAppend.isSelected()) {
+                    diff = diff.concat(" , noinit ");
+                }
+                if (jRadioButtonOverwrite.isSelected()) {
+                    diff = diff.concat(" , init ");
+                }
+                nameBackup = ", name = N'" + dbName + " Full Database Backup '";
+                diff = diff.concat(nameBackup);
+                diff = diff.concat(", skip, norewind, nounload");
+                execStmt = execStmt.concat(diff);
+            }
+            case "Transaction Log" -> {
+                log = "backup log [" + dbName
+                        + "] to " + backUpTo + " = N'"
+                        + path + "'"
+                        + " with differential, noformat ";
+                if (jRadioButtonAppend.isSelected()) {
+                    log = log.concat(" , noinit ");
+                }
+                if (jRadioButtonOverwrite.isSelected()) {
+                    log = log.concat(" , init ");
+                }
+                nameBackup = ", name = N'" + dbName + " Full Database Backup '";
+                log = log.concat(nameBackup);
+                log = log.concat(", skip, norewind, nounload");
+                execStmt = execStmt.concat(log);
+            }
+        }
+        return execStmt;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,7 +131,16 @@ public class Backup extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+        BackupComponent = new javax.swing.ButtonGroup();
+        OverwriteMedia = new javax.swing.ButtonGroup();
+        AppendOrOverwrite = new javax.swing.ButtonGroup();
+        jPanel2 = new javax.swing.JPanel();
+        jButtonTabGeneral = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButtonOK = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jComboBoxDB = new javax.swing.JComboBox<>();
@@ -82,11 +158,13 @@ public class Backup extends javax.swing.JInternalFrame {
         jButton4 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jPanel2 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButtonOK = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JSeparator();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        jRadioButtonAppend = new javax.swing.JRadioButton();
+        jRadioButtonOverwrite = new javax.swing.JRadioButton();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setClosable(true);
         setTitle("Backup Database");
@@ -108,6 +186,81 @@ public class Backup extends javax.swing.JInternalFrame {
             }
         });
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jButtonTabGeneral.setText("General");
+        jButtonTabGeneral.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonTabGeneralMouseClicked(evt);
+            }
+        });
+
+        jButton3.setText("Media Options");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonTabGeneral, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButtonTabGeneral)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jButton1.setText("Cancel");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+
+        jButtonOK.setText("OK");
+        jButtonOK.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonOKMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonOK)
+                .addGap(18, 18, 18)
+                .addComponent(jButton1))
+        );
+
+        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton1, jButtonOK});
+
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButtonOK)))
+        );
+
+        jPanel4.setLayout(new java.awt.CardLayout());
+
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel2.setText("Database:");
@@ -126,7 +279,7 @@ public class Backup extends javax.swing.JInternalFrame {
 
         jLabel4.setText("Backup Component:");
 
-        buttonGroup1.add(jRadioButton1);
+        BackupComponent.add(jRadioButton1);
         jRadioButton1.setSelected(true);
         jRadioButton1.setText("Database");
 
@@ -191,7 +344,7 @@ public class Backup extends javax.swing.JInternalFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 346, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButtonAdd, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -241,62 +394,67 @@ public class Backup extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.add(jPanel1, "card2");
 
-        jLabel5.setText("General");
+        jLabel5.setText("Overwrite media");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        OverwriteMedia.add(jRadioButton2);
+        jRadioButton2.setSelected(true);
+        jRadioButton2.setText("Back up to the existing media set");
+
+        AppendOrOverwrite.add(jRadioButtonAppend);
+        jRadioButtonAppend.setSelected(true);
+        jRadioButtonAppend.setText("Append to the existing backup set");
+
+        AppendOrOverwrite.add(jRadioButtonOverwrite);
+        jRadioButtonOverwrite.setText("Overwrite all existing backup sets");
+
+        jCheckBox1.setText("Check media set name and backup set expiration");
+        jCheckBox1.setEnabled(false);
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
-                .addContainerGap(59, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator3)
+                        .addContainerGap())
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButton2)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jRadioButtonOverwrite)
+                                    .addComponent(jRadioButtonAppend)
+                                    .addComponent(jCheckBox1))))
+                        .addContainerGap(114, Short.MAX_VALUE))))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel5)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButtonAppend)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButtonOverwrite)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox1)
+                .addContainerGap(211, Short.MAX_VALUE))
         );
 
-        jButton1.setText("Cancel");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-
-        jButtonOK.setText("OK");
-        jButtonOK.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButtonOKMouseClicked(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonOK)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1))
-        );
-
-        jPanel3Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton1, jButtonOK});
-
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButtonOK)))
-        );
+        jPanel4.add(jPanel5, "card3");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -307,8 +465,8 @@ public class Backup extends javax.swing.JInternalFrame {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -318,7 +476,7 @@ public class Backup extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -349,30 +507,41 @@ public class Backup extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, "Path can NOT empty!");
                 return;
             }
-            String type = (String) jComboBoxType.getSelectedItem();
-            String dbName = (String) jComboBoxDB.getSelectedItem();
-            if (type.equalsIgnoreCase("full")) {
-                for (int i = 0; i < jList1.getModel().getSize(); i++) {
-                    path = jList1.getModel().getElementAt(i);
-                    System.out.println("path will backup: " + path);
-                    DaoBackupDB.full(dbName, path);
-                }
-                JOptionPane.showMessageDialog(null, "Success!");
-            } else if (type.equalsIgnoreCase("differential")) {
-                for (int i = 0; i < jList1.getModel().getSize(); i++) {
-                    path = jList1.getModel().getElementAt(i);
-                    System.out.println("path will backup: " + path);
-                    DaoBackupDB.differential(dbName, path);
-                }
-                JOptionPane.showMessageDialog(null, "Success!");
-            } else {
-                for (int i = 0; i < jList1.getModel().getSize(); i++) {
-                    path = jList1.getModel().getElementAt(i);
-                    System.out.println("path will backup: " + path);
-                    DaoBackupDB.log(dbName, path);
-                }
+            Backup.hasError = 0;
+            for (int i = 0; i < jList1.getModel().getSize(); i++) {
+                path = jList1.getModel().getElementAt(i);
+                System.out.println("path will backup: " + path);
+                String execStmt = generateSQL(path);
+                System.out.println(execStmt);
+                DaoBackupDB.execNonQuery(execStmt);
+            }
+            if (hasError == 0) {
                 JOptionPane.showMessageDialog(null, "Success!");
             }
+
+            //code cũ
+//            if (type.equalsIgnoreCase("full")) {
+//                for (int i = 0; i < jList1.getModel().getSize(); i++) {
+//                    path = jList1.getModel().getElementAt(i);
+//                    System.out.println("path will backup: " + path);
+//                    DaoBackupDB.full(dbName, path);
+//                }
+//                JOptionPane.showMessageDialog(null, "Success!");
+//            } else if (type.equalsIgnoreCase("differential")) {
+//                for (int i = 0; i < jList1.getModel().getSize(); i++) {
+//                    path = jList1.getModel().getElementAt(i);
+//                    System.out.println("path will backup: " + path);
+//                    DaoBackupDB.differential(dbName, path);
+//                }
+//                JOptionPane.showMessageDialog(null, "Success!");
+//            } else {
+//                for (int i = 0; i < jList1.getModel().getSize(); i++) {
+//                    path = jList1.getModel().getElementAt(i);
+//                    System.out.println("path will backup: " + path);
+//                    DaoBackupDB.log(dbName, path);
+//                }
+//                JOptionPane.showMessageDialog(null, "Success!");
+//            }
         }
     }//GEN-LAST:event_jButtonOKMouseClicked
 
@@ -402,16 +571,36 @@ public class Backup extends javax.swing.JInternalFrame {
 
     private void jComboBoxDBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxDBItemStateChanged
         // TODO add your handling code here:
+        evt.getItem();
         defaultDisk();
     }//GEN-LAST:event_jComboBoxDBItemStateChanged
 
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            cl.show(jPanel4, "card3");
+        }
+    }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jButtonTabGeneralMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonTabGeneralMouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            cl.show(jPanel4, "card2");
+        }
+    }//GEN-LAST:event_jButtonTabGeneralMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup AppendOrOverwrite;
+    private javax.swing.ButtonGroup BackupComponent;
+    private javax.swing.ButtonGroup OverwriteMedia;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonOK;
+    private javax.swing.JButton jButtonTabGeneral;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JComboBox<String> jComboBoxDB;
     private javax.swing.JComboBox<String> jComboBoxType;
@@ -426,9 +615,15 @@ public class Backup extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
+    private javax.swing.JRadioButton jRadioButtonAppend;
+    private javax.swing.JRadioButton jRadioButtonOverwrite;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     // End of variables declaration//GEN-END:variables
 }

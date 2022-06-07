@@ -274,8 +274,6 @@ public class Restore extends javax.swing.JInternalFrame {
 
         jPanel2.setLayout(new java.awt.CardLayout());
 
-        jPanel3.setBackground(new java.awt.Color(229, 229, 242));
-
         jLabel1.setText("Source");
 
         buttonGroup1.add(jRadioButton1);
@@ -803,6 +801,7 @@ public class Restore extends javax.swing.JInternalFrame {
 
     private void jComboBoxDBNameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxDBNameItemStateChanged
         // TODO add your handling code here:
+        evt.getItem();
         String dbNameFromBak = (String) jComboBoxDBName.getSelectedItem();
         if (dbNameFromBak != null) {
             jComboBoxDBDestination.removeAllItems();
@@ -845,6 +844,7 @@ public class Restore extends javax.swing.JInternalFrame {
 
     private void jCheckBoxRelocateItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCheckBoxRelocateItemStateChanged
         // TODO add your handling code here:
+        evt.getItem();
         if (jCheckBoxRelocate.isSelected()) {
             jTextFieldDataFile.setEnabled(true);
             jTextFieldLogFile.setEnabled(true);

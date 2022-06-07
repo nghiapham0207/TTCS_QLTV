@@ -8,10 +8,12 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import server.KetNoi;
+import view.Backup;
 /**
  *
  * @author nghia
@@ -80,6 +82,20 @@ public class DaoBackupDB {
             } catch (SQLException ex) {
                 Logger.getLogger(DaoDatabaseRoles.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    public static void execNonQuery(String execStmt) {
+        Connection connection = KetNoi.layKetNoi();
+        Statement s;
+        try {
+            s = connection.createStatement();
+            s.execute(execStmt);
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoRestore.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            //có lỗi trong quá trình backup list file
+            Backup.hasError++;
         }
     }
 }
