@@ -9,13 +9,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Member;
-import server.KetNoi;
+import server.Connect;
 
 /**
  *
@@ -25,13 +26,13 @@ public class DaoMembers {
     public static List<String> getList(String roleName){
         String sql="exec sp_getlistmember ?";
         List<String> list = new ArrayList<>();
-        Connection connection = KetNoi.layKetNoi();
-        PreparedStatement ps;
+        Connection connection = Connect.getConnect();
+        CallableStatement cs;
         ResultSet rs;
         try {
-            ps=connection.prepareCall(sql);
-            ps.setString(1, roleName);
-            rs=ps.executeQuery();
+            cs=connection.prepareCall(sql);
+            cs.setString(1, roleName);
+            rs=cs.executeQuery();
             while (rs.next()) {                
                 list.add(rs.getString("Role members"));
             }
@@ -50,7 +51,7 @@ public class DaoMembers {
     public static List<Member> getListMemberToAdd(){
         String sql="select * from v_membertoadd";
         List<Member> list = new ArrayList<>();
-        Connection connection = KetNoi.layKetNoi();
+        Connection connection = Connect.getConnect();
         Statement statement;
         ResultSet rs;
         try {

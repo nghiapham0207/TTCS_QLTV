@@ -29,6 +29,7 @@ public class Restore extends javax.swing.JInternalFrame {
      */
     private final CardLayout cl;
     private DefaultTableModel dtm;
+    private final String defReLocateFile = "D:\\Program Files\\";
 
     public Restore() {
         initComponents();
@@ -67,22 +68,77 @@ public class Restore extends javax.swing.JInternalFrame {
         if (list.isEmpty()) {
             return;
         }
+
+        //restore into .mdf .ldf not .bak .trn
+        //tomorrow i am going to fix
         dtm = (DefaultTableModel) jTableDBFiles.getModel();
         dtm.setRowCount(0);
-        list.forEach(databaseFile -> {
+        File restoreAs;
+        String fileName = "";
+        for (DatabaseFile databaseFile : list) {
+            //get origin file to get path
+            restoreAs = new File(databaseFile.getOriginalFileName());
+            if (databaseFile.getFileType().equalsIgnoreCase("rows data")) {
+                fileName = (String) jComboBoxDBDestination.getSelectedItem();
+                fileName = fileName.concat(".mdf");
+            }
+            if (databaseFile.getFileType().equalsIgnoreCase("log")) {
+                fileName = (String) jComboBoxDBDestination.getSelectedItem();
+                fileName = fileName.concat("_log.ldf");
+            }
+            //set restore as use parent path of origin file
+            databaseFile.setRestoreAs(restoreAs.getParent().concat("\\" + fileName));
             dtm.addRow(new Object[]{
                 databaseFile.getLogicalName(),
                 databaseFile.getFileType(),
                 databaseFile.getOriginalFileName(),
                 databaseFile.getRestoreAs()
             });
-        });
+        }
+//        list.forEach(databaseFile -> {
+//            dtm.addRow(new Object[]{
+//                databaseFile.getLogicalName(),
+//                databaseFile.getFileType(),
+//                databaseFile.getOriginalFileName(),
+//                databaseFile.getRestoreAs()
+//            });
+//        });
         jTableDBFiles.setModel(dtm);
+    }
+
+    private void setTabFiles() {
+        System.out.println("starting set tab Files");
+        String pathDisk = jTextFieldDevice.getText().trim();
+        System.out.println("load table database files");
+        System.out.println("load file is only: " + pathDisk);
+        if (!pathDisk.isEmpty()) {
+            loadDBFiles(DaoRestore.getDBFiles(pathDisk));
+
+            //set tab files
+            //reset
+            jTextFieldDataFile.setText("");
+            jTextFieldLogFile.setText("");
+            //set
+            String dbDesName = (String) jComboBoxDBDestination.getSelectedItem();
+            System.out.println("des db empty: " + dbDesName.isEmpty() + ". can not set tab Files!");
+            if (!dbDesName.isEmpty()) {
+                jTextFieldDataFile.setText(defReLocateFile + dbDesName + ".mdf");
+                jTextFieldLogFile.setText(defReLocateFile + dbDesName + "_log.trn");
+            } else {
+                jTextFieldDataFile.setText(defReLocateFile);
+                jTextFieldLogFile.setText(defReLocateFile);
+            }
+        }
     }
 
     public void restore() {
         String execStmt = "Use [master] ";
         String dbName = (String) jComboBoxDBDestination.getSelectedItem();
+        String originDBName = (String) jComboBoxDBName.getSelectedItem();
+        if (dbName.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Destination database can NOT empty!");
+            return;
+        }
         int checkedCount = 0;
         boolean restore;
         for (int i = 0; i < jTable1.getRowCount(); i++) {
@@ -109,6 +165,19 @@ public class Restore extends javax.swing.JInternalFrame {
                                 + "] from disk = N'" + path
                                 + "' with file = " + position;
 
+                        //write new destination db name
+                        if (!dbName.equalsIgnoreCase(originDBName)) {
+//                        if (!DaoRestore.checkExistDB(dbName)) {
+                            setTabFiles();
+                            String dataFile = (String) jTableDBFiles.getValueAt(0, 3);
+                            String logFile = (String) jTableDBFiles.getValueAt(1, 3);
+                            System.out.println("save new db: " + dataFile);
+                            //
+                            jTextFieldDataFile.setText(dataFile);
+                            jTextFieldLogFile.setText(logFile);
+                            jCheckBoxRelocate.setSelected(true);
+                        }
+                        //get event select
                         if (jCheckBoxRelocate.isSelected()) {
                             String dataFile = jTextFieldDataFile.getText().trim();
                             String logFile = jTextFieldLogFile.getText().trim();
@@ -711,12 +780,7 @@ public class Restore extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel2, "card3");
-            String pathDisk = jTextFieldDevice.getText().trim();
-            System.out.println("load table database files");
-            System.out.println("load file is only: " + pathDisk);
-            if (!pathDisk.isEmpty()) {
-                loadDBFiles(DaoRestore.getDBFiles(pathDisk));
-            }
+            setTabFiles();
         }
     }//GEN-LAST:event_jButton4MouseClicked
 
@@ -730,12 +794,14 @@ public class Restore extends javax.swing.JInternalFrame {
             jfc.setMultiSelectionEnabled(true);
             jfc.setToolTipText("Choose path or file to back up");
             jfc.setDialogTitle("Choose path or file to back up");
+
             int option = jfc.showOpenDialog(null);
+
             if (option == JFileChooser.APPROVE_OPTION) {
                 File path = jfc.getSelectedFile();
                 if (path.isFile()) {
                     jTextFieldDevice.setText(path.getPath());
-                    System.out.println(DaoRestore.getDBNameFromBak(path.getPath()));
+//                    System.out.println(DaoRestore.getDBNameFromBak(path.getPath()));
 
                     loadComboBoxDBName(DaoRestore.getDBNameFromBak(path.getPath()));
 
@@ -744,6 +810,7 @@ public class Restore extends javax.swing.JInternalFrame {
                     if (dbNameFromBak != null) {
                         jComboBoxDBDestination.removeAllItems();
                         jComboBoxDBDestination.addItem(dbNameFromBak);
+                        jComboBoxDBDestination.setSelectedItem(dbNameFromBak);
                         String dbName = (String) jComboBoxDBName.getSelectedItem();
                         System.out.println(path.getPath());
                         loadBackupSets(
@@ -756,9 +823,7 @@ public class Restore extends javax.swing.JInternalFrame {
                         }
 
                         //set tab files
-                        String dbDesName = (String) jComboBoxDBDestination.getSelectedItem();
-                        jTextFieldDataFile.setText(jTextFieldDataFile.getText() + dbDesName + ".bak");
-                        jTextFieldLogFile.setText(jTextFieldLogFile.getText() + dbDesName + "_log.trn");
+//                        setTabFiles();
                     }
                 }
             }

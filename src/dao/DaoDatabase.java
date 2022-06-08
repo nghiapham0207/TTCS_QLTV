@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import server.KetNoi;
+import server.Connect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +23,7 @@ public class DaoDatabase {
     public static List<String> getList(){
         List<String> list = new ArrayList<>();
         String sql = "SELECT name FROM master.dbo.sysdatabases WHERE dbid < 2 or dbid > 6";
-        Connection connection = KetNoi.layKetNoi();
+        Connection connection = Connect.getConnect();
         Statement statement;
         ResultSet resultSet;
         try {

@@ -11,12 +11,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import model.Member;
-import server.KetNoi;
+import server.Connect;
 
 /**
  *
@@ -27,7 +28,7 @@ public class DaoDatabaseRoles {
     public static List<String> getList() {
         String sql = "select name from sys.sysusers where issqlrole = 1";
         List<String> list = new ArrayList<>();
-        Connection connection = KetNoi.layKetNoi();
+        Connection connection = Connect.getConnect();
         Statement statement;
         ResultSet resultSet;
         try {
@@ -51,13 +52,13 @@ public class DaoDatabaseRoles {
     public static void removeMember(String roleName, String memberName) {
         String sql = "exec sp_droprolemember ?, ?";
         Connection connection;
-        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+        CallableStatement cs;
+        connection = Connect.getConnect();
         try {
-            ps = connection.prepareCall(sql);
-            ps.setString(1, roleName);
-            ps.setString(2, memberName);
-            ps.execute();
+            cs = connection.prepareCall(sql);
+            cs.setString(1, roleName);
+            cs.setString(2, memberName);
+            cs.execute();
             JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -72,11 +73,11 @@ public class DaoDatabaseRoles {
 
     public static void insert(String roleName) {
 //        String sql = "exec sp_addrole ?";
-        String sql = "USE [QLTV] " + " GO " + "CREATE ROLE [" + roleName + "]" + " GO ";
+        String sql = "USE [QLTV] CREATE ROLE [" + roleName + "]";
         Connection connection;
         Statement s;
-//        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+//        CallableStatement ps;
+        connection = Connect.getConnect();
         try {
 //            ps = connection.prepareCall(sql);
 //            ps.setString(1, roleName);
@@ -98,15 +99,15 @@ public class DaoDatabaseRoles {
     public static void addMember(String roleName, List<Member> list) {
         String sql = "exec sp_addrolemember ?, ?";
         Connection connection;
-        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+        CallableStatement cs;
+        connection = Connect.getConnect();
 //        int count=0;
         try {
-            ps = connection.prepareCall(sql);
+            cs = connection.prepareCall(sql);
             for (Member member : list) {
-                ps.setString(1, roleName);
-                ps.setString(2, member.getName());
-                ps.execute();
+                cs.setString(1, roleName);
+                cs.setString(2, member.getName());
+                cs.execute();
             }
             JOptionPane.showMessageDialog(null, "Success!\nRefresh to update!");
         } catch (SQLException ex) {

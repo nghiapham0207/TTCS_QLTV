@@ -6,13 +6,13 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import server.KetNoi;
+import server.Connect;
 import view.Backup;
 /**
  *
@@ -22,13 +22,13 @@ public class DaoBackupDB {
     public static void full(String dbName, String path){
         String sql="exec sp_backupdb_full ?, ?";
         Connection connection;
-        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+        CallableStatement cs;
+        connection = Connect.getConnect();
         try {
-            ps = connection.prepareCall(sql);
-            ps.setString(1, dbName);
-            ps.setString(2, path);
-            ps.execute();
+            cs = connection.prepareCall(sql);
+            cs.setString(1, dbName);
+            cs.setString(2, path);
+            cs.execute();
             //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -44,13 +44,13 @@ public class DaoBackupDB {
     public static void differential(String dbName, String path){
         String sql="exec sp_backupdb_diff ?, ?";
         Connection connection;
-        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+        CallableStatement cs;
+        connection = Connect.getConnect();
         try {
-            ps = connection.prepareCall(sql);
-            ps.setString(1, dbName);
-            ps.setString(2, path);
-            ps.execute();
+            cs = connection.prepareCall(sql);
+            cs.setString(1, dbName);
+            cs.setString(2, path);
+            cs.execute();
             //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -66,13 +66,13 @@ public class DaoBackupDB {
     public static void log(String dbName, String path){
         String sql="exec sp_backuplog ?, ?";
         Connection connection;
-        PreparedStatement ps;
-        connection = KetNoi.layKetNoi();
+        CallableStatement cs;
+        connection = Connect.getConnect();
         try {
-            ps = connection.prepareCall(sql);
-            ps.setString(1, dbName);
-            ps.setString(2, path);
-            ps.execute();
+            cs = connection.prepareCall(sql);
+            cs.setString(1, dbName);
+            cs.setString(2, path);
+            cs.execute();
             //JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -86,7 +86,7 @@ public class DaoBackupDB {
     }
     
     public static void execNonQuery(String execStmt) {
-        Connection connection = KetNoi.layKetNoi();
+        Connection connection = Connect.getConnect();
         Statement s;
         try {
             s = connection.createStatement();

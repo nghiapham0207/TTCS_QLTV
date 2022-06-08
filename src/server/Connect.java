@@ -11,8 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
@@ -21,9 +19,9 @@ import javax.swing.JOptionPane;
  *
  * @author nghia
  */
-public class KetNoi {
+public class Connect {
 
-    public static Connection layKetNoi() {
+    public static Connection getConnect() {
         FileReader fr;
         Properties p;
         String user;
