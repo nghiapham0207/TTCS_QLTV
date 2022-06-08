@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.sql.CallableStatement;
 import java.util.ArrayList;
 import java.util.logging.Level;
