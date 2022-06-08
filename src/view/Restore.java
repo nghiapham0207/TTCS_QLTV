@@ -7,6 +7,7 @@ package view;
 
 import dao.DaoRestore;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
@@ -308,6 +309,7 @@ public class Restore extends javax.swing.JInternalFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
+        jButton1.setBackground(new java.awt.Color(153, 184, 247));
         jButton1.setText("General");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -773,6 +775,9 @@ public class Restore extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel2, "card2");
+            jButton1.setBackground(new java.awt.Color(153, 184, 247));
+            jButton4.setBackground(new java.awt.Color(214, 217, 223));
+            jButton8.setBackground(new java.awt.Color(214, 217, 223));
         }
     }//GEN-LAST:event_jButton1MouseClicked
 
@@ -780,6 +785,9 @@ public class Restore extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel2, "card3");
+            jButton4.setBackground(new java.awt.Color(153, 184, 247));
+            jButton1.setBackground(new java.awt.Color(214, 217, 223));
+            jButton8.setBackground(new java.awt.Color(214, 217, 223));
             setTabFiles();
         }
     }//GEN-LAST:event_jButton4MouseClicked
@@ -853,14 +861,21 @@ public class Restore extends javax.swing.JInternalFrame {
         if (evt.getButton() == MouseEvent.BUTTON1) {
             int row = jTable1.getSelectedRow();
             if (row != -1) {
-                String startDate = (String) jTable1.getValueAt(row, 5);
-                jTextFieldTimeLine.setText(startDate);
+//                boolean restore;
+//                restore = (boolean) jTable1.getValueAt(row, 0);
+
                 boolean restore = (boolean) jTable1.getValueAt(row, 0);
+                String startDate;
+                
                 if (restore) {
+                    startDate = (String) jTable1.getValueAt(row, 5);
+                    jTextFieldTimeLine.setText(startDate);
                     for (int i = 0; i < row; i++) {
                         jTable1.setValueAt(true, i, 0);
                     }
                 } else {
+                    startDate = (String) jTable1.getValueAt(row - 1, 5);
+                    jTextFieldTimeLine.setText(startDate);
                     for (int i = row; i < jTable1.getRowCount(); i++) {
                         jTable1.setValueAt(false, i, 0);
                     }
@@ -873,6 +888,9 @@ public class Restore extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel2, "card4");
+            jButton8.setBackground(new java.awt.Color(153, 184, 247));
+            jButton1.setBackground(new java.awt.Color(214, 217, 223));
+            jButton4.setBackground(new java.awt.Color(214, 217, 223));
         }
     }//GEN-LAST:event_jButton8MouseClicked
 

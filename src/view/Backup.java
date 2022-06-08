@@ -188,6 +188,7 @@ public class Backup extends javax.swing.JInternalFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
+        jButtonTabGeneral.setBackground(new java.awt.Color(153, 184, 247));
         jButtonTabGeneral.setText("General");
         jButtonTabGeneral.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -579,6 +580,8 @@ public class Backup extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel4, "card3");
+            jButton3.setBackground(new java.awt.Color(153, 184, 247));
+            jButtonTabGeneral.setBackground(new java.awt.Color(214,217,223));
         }
     }//GEN-LAST:event_jButton3MouseClicked
 
@@ -586,6 +589,8 @@ public class Backup extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             cl.show(jPanel4, "card2");
+            jButtonTabGeneral.setBackground(new java.awt.Color(153, 184, 247));
+            jButton3.setBackground(new java.awt.Color(214,217,223));
         }
     }//GEN-LAST:event_jButtonTabGeneralMouseClicked
 
