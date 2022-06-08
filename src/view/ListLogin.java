@@ -30,10 +30,10 @@ public class ListLogin extends javax.swing.JInternalFrame {
         init();
     }
 
-    private void init(){
+    private void init() {
         loadListLogin(DaoLogin.getList());
     }
-    
+
     public static void loadListLogin(List<Login> list) {
         defaultTableModel = (DefaultTableModel) tableListLogin.getModel();
         defaultTableModel.setRowCount(0);
@@ -170,7 +170,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
 
     private void formInternalFrameClosing(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosing
         // TODO add your handling code here:
-        System.out.println("ListLogin: "+evt.getID());
+        System.out.println("ListLogin: " + evt.getID());
         Main.removeTab((JTabbedPane) getParent(), getClass().toString());
     }//GEN-LAST:event_formInternalFrameClosing
 
@@ -179,9 +179,12 @@ public class ListLogin extends javax.swing.JInternalFrame {
         if (evt.getButton() == MouseEvent.BUTTON1) {
             int row = tableListLogin.getSelectedRow();
             if (row != -1) {
-                String loginName = (String) tableListLogin.getValueAt(row, 0);
-                String nameInDB = (String) tableListLogin.getValueAt(row, 1);
-                DaoLogin.delete(loginName, nameInDB);
+                int option = JOptionPane.showConfirmDialog(null, "Do you want to delete this login?");
+                if (option == JOptionPane.YES_OPTION) {
+                    String loginName = (String) tableListLogin.getValueAt(row, 0);
+                    String nameInDB = (String) tableListLogin.getValueAt(row, 1);
+                    DaoLogin.delete(loginName, nameInDB);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "No row selected!");
             }
@@ -202,7 +205,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
         if (evt.getButton() == MouseEvent.BUTTON1) {
             int row = tableListLogin.getSelectedRow();
             if (row != -1) {
-                 String loginName = (String) tableListLogin.getValueAt(row, 0);
+                String loginName = (String) tableListLogin.getValueAt(row, 0);
                 ChangePwdLogin changePwd = new ChangePwdLogin();
                 changePwd.setLocationRelativeTo(null);
                 changePwd.setLoginName(loginName);

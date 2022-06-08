@@ -168,6 +168,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         });
 
         jButton1.setText("Grant");
+        jButton1.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -271,10 +272,13 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         if (evt.getButton() == MouseEvent.BUTTON1) {
             int row = jTableListMembers.getSelectedRow();
             if (row != -1) {
-                String roleName = jTextFieldRoleName.getText().trim();
-                String memberName = (String) jTableListMembers.getValueAt(row, 0);
-                DaoDatabaseRoles.removeMember(roleName, memberName);
-                loadListMembersOfRole(DaoMembers.getList(roleName));
+                int option = JOptionPane.showConfirmDialog(null, "Do you want to delete this member?");
+                if (option == JOptionPane.YES_OPTION) {
+                    String roleName = jTextFieldRoleName.getText().trim();
+                    String memberName = (String) jTableListMembers.getValueAt(row, 0);
+                    DaoDatabaseRoles.removeMember(roleName, memberName);
+                    loadListMembersOfRole(DaoMembers.getList(roleName));
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "No member selected!");
             }
@@ -292,7 +296,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         if (evt.getButton() == MouseEvent.BUTTON1) {
             int row = jTableDatabaseRoles.getSelectedRow();
             if (row != -1) {
-                String roleName=jTextFieldRoleName.getText().trim();
+                String roleName = jTextFieldRoleName.getText().trim();
                 AddMemberToRole addMemberToRole = new AddMemberToRole(roleName);
                 addMemberToRole.setLocationRelativeTo(null);
                 addMemberToRole.setVisible(true);
@@ -314,7 +318,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
     private void jButtonRefreshMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonRefreshMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            String roleName=jTextFieldRoleName.getText().trim();
+            String roleName = jTextFieldRoleName.getText().trim();
             loadListMembersOfRole(DaoMembers.getList(roleName));
         }
     }//GEN-LAST:event_jButtonRefreshMouseClicked
