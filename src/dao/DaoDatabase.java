@@ -14,6 +14,7 @@ import java.util.List;
 import server.Connect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.UserMapping;
 
 /**
  *
@@ -31,6 +32,34 @@ public class DaoDatabase {
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 list.add(resultSet.getString("name"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return list;
+    }
+    
+    public static List<UserMapping> getListDBtoMapping(){
+        List<UserMapping> list = new ArrayList<>();
+        String sql = "SELECT name FROM master.dbo.sysdatabases WHERE dbid < 2 or dbid > 6";
+        Connection connection = Connect.getConnect();
+        Statement statement;
+        ResultSet resultSet;
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                list.add(new UserMapping(
+                        false,
+                        resultSet.getString("name"),
+                        ""
+                ));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);

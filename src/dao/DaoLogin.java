@@ -17,7 +17,9 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import model.Login;
 import server.Connect;
+import view.Backup;
 import view.ListLogin;
+import view.NewLogin;
 
 /**
  *
@@ -86,8 +88,8 @@ public class DaoLogin {
             cs.setString(1, loginName);
             cs.setString(2, nameInDB);
             cs.execute();
-            JOptionPane.showMessageDialog(null, "Success!");
             ListLogin.loadListLogin(getList());
+            JOptionPane.showMessageDialog(null, "Success!");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {
@@ -112,6 +114,41 @@ public class DaoLogin {
             ListLogin.loadListLogin(getList());
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public static void execNonQuery(String execStmt) {
+        Connection connection = Connect.getConnect();
+        Statement s;
+        try {
+            s = connection.createStatement();
+            s.execute(execStmt);
+        } catch (SQLException ex) {
+            Logger.getLogger(DaoRestore.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            //có lỗi trong quá trình exec
+            NewLogin.hasError = true;
+        }
+    }
+
+    public static void addUser(String dbName, String userName, String loginName) {
+        String sql = "use [" + dbName + "] create user [" + userName + "] for login [" + loginName + "]";
+        Connection connection = Connect.getConnect();
+        Statement s;
+        try {
+            s = connection.createStatement();
+            s.execute(sql);
+            System.out.println(sql);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+            Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+            NewLogin.hasError = true;
         } finally {
             try {
                 connection.close();

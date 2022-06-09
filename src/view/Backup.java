@@ -51,6 +51,11 @@ public class Backup extends javax.swing.JInternalFrame {
         jList1.setModel(dlm);
         jList1.setSelectedIndex(0);
     }
+    
+    public static boolean checkExistPath(String newPath){
+        dlm = (DefaultListModel) jList1.getModel();
+        return dlm.contains(newPath);
+    }
 
     public static void addPath() {
         dlm = (DefaultListModel) jList1.getModel();
@@ -567,6 +572,7 @@ public class Backup extends javax.swing.JInternalFrame {
             PathChooser pathChooser = new PathChooser(null, true);
             pathChooser.setLocationRelativeTo(null);
             pathChooser.setVisible(true);
+            
         }
     }//GEN-LAST:event_jButtonAddMouseClicked
 

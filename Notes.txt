@@ -1,0 +1,7 @@
+- Yêu cầu:
+	+ Cài đặt JDK
+	+ Cài đặt Microsoft SQL Server 2014 hoặc mới hơn
+- Chạy chương trình:
+	+ Chạy file QLTV_FULL.sql hoặc file QLTV_SCHEMA.sql trong thư mục sql server
+	+ Kiểm tra username, password và tên cơ sở dữ liệu trong file connection.properties
+	+ Dùng Apache Netbean IDE để chạy project hoặc chạy file TTCS_QLTV.jar trong thư mục dist

@@ -7,9 +7,12 @@ package view;
 
 import dao.DaoDatabase;
 import dao.DaoLogin;
+import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.UserMapping;
 
 /**
  *
@@ -20,14 +23,61 @@ public class NewLogin extends javax.swing.JFrame {
     /**
      * Creates new form NewLogin
      */
+    private final CardLayout cl;
+    private DefaultTableModel dtm;
+    public static boolean hasError;
+
     public NewLogin() {
         initComponents();
         init();
+        cl = (CardLayout) jPanel4.getLayout();
+    }
+
+    private String generateSQLAddLogin() {
+        String loginName = jTextField1.getText().trim();
+        String execStmt = "use [master] create login [" + loginName + "] ";
+        String pwd = new String(jPasswordFieldPwd.getPassword());
+        if (!pwd.isEmpty()) {
+            execStmt = execStmt.concat(" with password = N'" + pwd + "' ");
+        } else {
+            execStmt = execStmt.concat(" with password = N'' ");
+        }
+        if (jCheckBoxMustChange.isSelected()) {
+            execStmt = execStmt.concat(" must_change ");
+        }
+        String defDB = (String) jComboBoxDefDB.getSelectedItem();
+        execStmt = execStmt.concat(", default_database = [" + defDB + "] ");
+        if (jCheckBoxExpiration.isSelected()) {
+            execStmt = execStmt.concat(", check_expiration = on");
+        } else {
+            execStmt = execStmt.concat(", check_expiration = off");
+        }
+        if (jCheckBoxPolicy.isSelected()) {
+            execStmt = execStmt.concat(", check_policy = on");
+        } else {
+            execStmt = execStmt.concat(", check_policy = off");
+        }
+        return execStmt;
+    }
+
+    private boolean isUserNameEmpty() {
+        boolean mapped;
+        for (int i = 0; i < jTable1.getRowCount(); i++) {
+            mapped = (boolean) jTable1.getValueAt(i, 0);
+            if (mapped) {
+                String userName = (String) jTable1.getValueAt(i, 2);
+                if (userName.isEmpty()) {
+                    return true;//empty
+                }
+            }
+        }
+        return false;
     }
 
     private void init() {
         rbSQL.setSelected(true);
         loadComboBoxDefDB(DaoDatabase.getList());
+        loadTableMapping(DaoDatabase.getListDBtoMapping());
     }
 
     private void loadComboBoxDefDB(List<String> list) {
@@ -36,6 +86,44 @@ public class NewLogin extends javax.swing.JFrame {
             jComboBoxDefDB.addItem(string);
         }
         jComboBoxDefDB.setSelectedItem("QLTV");
+    }
+
+    private int countMapped() {
+        int count = 0;
+        boolean mapped;
+        for (int i = 0; i < jTable1.getRowCount(); i++) {
+            mapped = (boolean) jTable1.getValueAt(i, 0);
+            if (mapped) {
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    private void defaultUserName(String loginName){
+        boolean mapped;
+        for (int i = 0; i < jTable1.getRowCount(); i++) {
+            mapped = (boolean) jTable1.getValueAt(i, 0);
+            if (mapped) {
+                jTable1.setValueAt(loginName, i, 2);
+            }
+        }
+    }
+
+    private void loadTableMapping(List<UserMapping> list) {
+        dtm = (DefaultTableModel) jTable1.getModel();
+        dtm.setRowCount(0);
+        for (UserMapping userMapping : list) {
+            if (userMapping.getDatabase().equalsIgnoreCase("QLTV")) {
+                userMapping.setMap(true);
+            }
+            dtm.addRow(new Object[]{
+                userMapping.isMap(),
+                userMapping.getDatabase(),
+                userMapping.getUser()
+            });
+        }
+        jTable1.setModel(dtm);
     }
 
     /**
@@ -48,6 +136,13 @@ public class NewLogin extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanel2 = new javax.swing.JPanel();
+        jButtonOK = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        jButtonMapping = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
@@ -62,14 +157,72 @@ public class NewLogin extends javax.swing.JFrame {
         jCheckBoxMustChange = new javax.swing.JCheckBox();
         jLabel4 = new javax.swing.JLabel();
         jComboBoxDefDB = new javax.swing.JComboBox<>();
-        jPanel2 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Login - New");
-        setMaximumSize(new java.awt.Dimension(2000, 1000));
-        setResizable(false);
+
+        jPanel2.setPreferredSize(new java.awt.Dimension(556, 40));
+
+        jButtonOK.setText("OK");
+        jButtonOK.setPreferredSize(new java.awt.Dimension(65, 28));
+        jButtonOK.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonOKMouseClicked(evt);
+            }
+        });
+        jPanel2.add(jButtonOK);
+
+        jButton2.setText("Cancel");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
+        jPanel2.add(jButton2);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jButton3.setBackground(new java.awt.Color(153, 184, 247));
+        jButton3.setText("General");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
+
+        jButtonMapping.setText("User Mapping");
+        jButtonMapping.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButtonMappingMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonMapping, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonMapping)
+                .addContainerGap(263, Short.MAX_VALUE))
+        );
+
+        jPanel4.setLayout(new java.awt.CardLayout());
 
         jPanel1.setPreferredSize(new java.awt.Dimension(600, 300));
 
@@ -142,7 +295,7 @@ public class NewLogin extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addGap(177, 177, 177)
-                        .addComponent(jComboBoxDefDB, 0, 205, Short.MAX_VALUE))
+                        .addComponent(jComboBoxDefDB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(rbWindows)
@@ -183,31 +336,90 @@ public class NewLogin extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jComboBoxDefDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        jPanel4.add(jPanel1, "card2");
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(556, 40));
+        jLabel2.setText("User mapped to this login:");
 
-        jButton1.setText("OK");
-        jButton1.setPreferredSize(new java.awt.Dimension(65, 28));
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Map", "Database", "User"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
             }
         });
-        jPanel2.add(jButton1);
-
-        jButton2.setText("Cancel");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
+                jTable1MouseClicked(evt);
             }
         });
-        jPanel2.add(jButton2);
+        jScrollPane1.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(0).setMaxWidth(50);
+        }
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel4.add(jPanel5, "card3");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -272,13 +484,13 @@ public class NewLogin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton2MouseClicked
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+    private void jButtonOKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonOKMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             String pw = new String(jPasswordFieldPwd.getPassword());
             String confirm = new String(jPasswordFieldConfirm.getPassword());
-            String name=jTextField1.getText().trim();
-            if (name.equals("")) {
+            String loginName = jTextField1.getText().trim();
+            if (loginName.equals("")) {
                 JOptionPane.showMessageDialog(rootPane, "Login name is missing or empty!");
                 return;
             }
@@ -288,30 +500,94 @@ public class NewLogin extends javax.swing.JFrame {
                     return;
                 }
             }
-            boolean policy = jCheckBoxPolicy.isSelected();
-            boolean exp = jCheckBoxExpiration.isSelected();
-            boolean mustChange=jCheckBoxMustChange.isSelected();
-            String defDB=jComboBoxDefDB.getSelectedItem().toString();
-            DaoLogin.insert(name, pw, defDB, policy, exp, mustChange);
+//            boolean policy = jCheckBoxPolicy.isSelected();
+//            boolean exp = jCheckBoxExpiration.isSelected();
+//            boolean mustChange = jCheckBoxMustChange.isSelected();
+//            String defDB = jComboBoxDefDB.getSelectedItem().toString();
+//            DaoLogin.insert(name, pw, defDB, policy, exp, mustChange);
+
+            defaultUserName(loginName);
+            if (isUserNameEmpty()) {
+                defaultUserName(loginName);
+            }
+            String execStmt = generateSQLAddLogin();
+            hasError = false;
+            System.out.println(execStmt);
+            DaoLogin.execNonQuery(execStmt);
+            if (!hasError) {
+                boolean mapped;
+                hasError = false;
+                for (int i = 0; i < jTable1.getRowCount(); i++) {
+                    mapped = (boolean) jTable1.getValueAt(i, 0);
+                    if (mapped) {
+                        String dbName = (String) jTable1.getValueAt(i, 1);
+                        String userName = (String) jTable1.getValueAt(i, 2);
+                        DaoLogin.addUser(dbName, userName, loginName);
+                    }
+                }
+                if (!hasError) {
+                    JOptionPane.showMessageDialog(null, "Success!");
+                }
+            }
         }
-    }//GEN-LAST:event_jButton1MouseClicked
+    }//GEN-LAST:event_jButtonOKMouseClicked
+
+    private void jButtonMappingMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonMappingMouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            cl.show(jPanel4, "card3");
+            jButtonMapping.setBackground(new java.awt.Color(153, 184, 247));
+            jButton3.setBackground(new java.awt.Color(214, 217, 223));
+        }
+    }//GEN-LAST:event_jButtonMappingMouseClicked
+
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            cl.show(jPanel4, "card2");
+            jButton3.setBackground(new java.awt.Color(153, 184, 247));
+            jButtonMapping.setBackground(new java.awt.Color(214, 217, 223));
+        }
+    }//GEN-LAST:event_jButton3MouseClicked
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        if (evt.getButton() == MouseEvent.BUTTON1) {
+            int row = jTable1.getSelectedRow();
+            if (row != -1) {
+                if (countMapped() == 0) {
+                    boolean mapped;
+                    mapped = true;
+                    jTable1.setValueAt(mapped, row, 0);
+                }
+            }
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButtonMapping;
+    private javax.swing.JButton jButtonOK;
     private javax.swing.JCheckBox jCheckBoxExpiration;
     private javax.swing.JCheckBox jCheckBoxMustChange;
     private javax.swing.JCheckBox jCheckBoxPolicy;
     private javax.swing.JComboBox<String> jComboBoxDefDB;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabelConfirm;
     private javax.swing.JLabel jLabelPwd;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JPasswordField jPasswordFieldConfirm;
     private javax.swing.JPasswordField jPasswordFieldPwd;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JRadioButton rbSQL;
     private javax.swing.JRadioButton rbWindows;
