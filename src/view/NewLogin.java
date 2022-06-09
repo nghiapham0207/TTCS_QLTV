@@ -7,6 +7,7 @@ package view;
 
 import dao.DaoDatabase;
 import dao.DaoLogin;
+import static dao.DaoLogin.getList;
 import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -526,6 +527,7 @@ public class NewLogin extends javax.swing.JFrame {
                     }
                 }
                 if (!hasError) {
+                    ListLogin.loadListLogin(getList());
                     JOptionPane.showMessageDialog(null, "Success!");
                 }
             }

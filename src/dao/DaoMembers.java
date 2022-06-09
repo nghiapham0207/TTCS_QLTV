@@ -23,22 +23,23 @@ import server.Connect;
  * @author nghia
  */
 public class DaoMembers {
-    public static List<String> getList(String roleName){
-        String sql="exec sp_getlistmember ?";
+
+    public static List<String> getList(String roleName) {
+        String sql = "exec sp_getlistmember ?";
         List<String> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
         CallableStatement cs;
         ResultSet rs;
         try {
-            cs=connection.prepareCall(sql);
+            cs = connection.prepareCall(sql);
             cs.setString(1, roleName);
-            rs=cs.executeQuery();
-            while (rs.next()) {                
+            rs = cs.executeQuery();
+            while (rs.next()) {
                 list.add(rs.getString("Role members"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
-        } finally{
+        } finally {
             try {
                 connection.close();
             } catch (SQLException ex) {
@@ -47,22 +48,28 @@ public class DaoMembers {
         }
         return list;
     }
-    
-    public static List<Member> getListMemberToAdd(){
-        String sql="select * from v_membertoadd";
+
+    public static List<Member> getListMemberToAdd(String dbName) {
+//        String sql="select * from v_membertoadd";
+        String sql = "use [" + dbName
+                + "] select name, 'User' as [type] from sys.sysusers"
+                + " where issqlrole = 0 and uid not in (1, 3, 4)\n"
+                + "union\n"
+                + "select name, 'Database Role' as [type] from sys.database_principals"
+                + " where is_fixed_role = 0 and type = 'R'";
         List<Member> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
         Statement statement;
         ResultSet rs;
         try {
-            statement=connection.createStatement();
+            statement = connection.createStatement();
             rs = statement.executeQuery(sql);
-            while (rs.next()) {                
+            while (rs.next()) {
                 list.add(new Member(rs.getString(1), rs.getString(2), false));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
-        } finally{
+        } finally {
             try {
                 connection.close();
             } catch (SQLException ex) {

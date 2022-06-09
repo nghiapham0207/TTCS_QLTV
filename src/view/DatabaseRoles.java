@@ -5,6 +5,7 @@
  */
 package view;
 
+import dao.DaoDatabase;
 import dao.DaoDatabaseRoles;
 import dao.DaoMembers;
 import java.awt.event.MouseEvent;
@@ -23,10 +24,18 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
      * Creates new form DatabaseRoles
      */
     private static DefaultTableModel dtm;
+    public static String currentDB;
 
     public DatabaseRoles() {
         initComponents();
-        loadDatabaseRoles(DaoDatabaseRoles.getList());
+        init();
+    }
+    
+    private void init(){
+        loadComboBoxDefDB(DaoDatabase.getList());
+        String dbName = (String) jComboBoxDB.getSelectedItem();
+        loadDatabaseRoles(DaoDatabaseRoles.getList(dbName));
+        currentDB = dbName;
     }
 
     public static void loadDatabaseRoles(List<String> list) {
@@ -38,6 +47,14 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             });
         }
         jTableDatabaseRoles.setModel(dtm);
+    }
+    
+    private void loadComboBoxDefDB(List<String> list) {
+        jComboBoxDB.removeAllItems();
+        for (String string : list) {
+            jComboBoxDB.addItem(string);
+        }
+        jComboBoxDB.setSelectedItem("QLTV");
     }
 
     private void loadListMembersOfRole(List<String> list) {
@@ -60,7 +77,6 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableDatabaseRoles = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
@@ -74,6 +90,8 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         jButtonRefresh = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButtonNewRole = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jComboBoxDB = new javax.swing.JComboBox<>();
 
         setClosable(true);
         setTitle("Database Roles");
@@ -94,8 +112,6 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
             }
         });
-
-        jLabel1.setText("Database Roles");
 
         jTableDatabaseRoles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -184,10 +200,10 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
                         .addComponent(jButtonRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -205,7 +221,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonRemoveMember)
@@ -221,6 +237,14 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel4.setText("Database");
+
+        jComboBoxDB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBoxDBItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -229,11 +253,13 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jComboBoxDB, 0, 196, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonNewRole, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())))
@@ -243,12 +269,17 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
+                    .addComponent(jLabel4)
                     .addComponent(jButtonNewRole))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jComboBoxDB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -323,6 +354,13 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jButtonRefreshMouseClicked
 
+    private void jComboBoxDBItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxDBItemStateChanged
+        // TODO add your handling code here:
+        String dbName = (String) jComboBoxDB.getSelectedItem();
+        loadDatabaseRoles(DaoDatabaseRoles.getList(dbName));
+        currentDB = dbName;
+    }//GEN-LAST:event_jComboBoxDBItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -330,9 +368,10 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButtonNewRole;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JButton jButtonRemoveMember;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JComboBox<String> jComboBoxDB;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

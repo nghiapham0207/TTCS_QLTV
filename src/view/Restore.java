@@ -874,7 +874,12 @@ public class Restore extends javax.swing.JInternalFrame {
                         jTable1.setValueAt(true, i, 0);
                     }
                 } else {
-                    startDate = (String) jTable1.getValueAt(row - 1, 5);
+                    if (row == 0) {
+                        startDate = (String) jTable1.getValueAt(row, 5);
+                    }else{
+                        startDate = (String) jTable1.getValueAt(row - 1, 5);
+                    }
+                    
                     jTextFieldTimeLine.setText(startDate);
                     for (int i = row; i < jTable1.getRowCount(); i++) {
                         jTable1.setValueAt(false, i, 0);

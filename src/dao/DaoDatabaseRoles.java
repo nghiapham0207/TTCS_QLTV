@@ -24,8 +24,8 @@ import server.Connect;
  */
 public class DaoDatabaseRoles {
 
-    public static List<String> getList() {
-        String sql = "select name from sys.sysusers where issqlrole = 1";
+    public static List<String> getList(String dbName) {
+        String sql = "use [" + dbName + "] select name from sys.sysusers where issqlrole = 1";
         List<String> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
         Statement statement;
@@ -70,9 +70,9 @@ public class DaoDatabaseRoles {
         }
     }
 
-    public static void insert(String roleName) {
+    public static void insert(String roleName, String dbName) {
 //        String sql = "exec sp_addrole ?";
-        String sql = "USE [QLTV] CREATE ROLE [" + roleName + "]";
+        String sql = "USE [" + dbName + "] CREATE ROLE [" + roleName + "]";
         Connection connection;
         Statement s;
 //        CallableStatement ps;

@@ -28,7 +28,7 @@ public class AddMemberToRole extends javax.swing.JFrame {
 
     public AddMemberToRole(String roleName) {
         initComponents();
-        loadMembers(dao.DaoMembers.getListMemberToAdd());
+        loadMembers(dao.DaoMembers.getListMemberToAdd(DatabaseRoles.currentDB));
         this.roleName = roleName;
         addMembers = new ArrayList<>();
     }

@@ -173,7 +173,7 @@ public class NewRole extends javax.swing.JFrame {
     private void jButtonRemoveMemberMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonRemoveMemberMouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            
+
         }
     }//GEN-LAST:event_jButtonRemoveMemberMouseClicked
 
@@ -194,13 +194,13 @@ public class NewRole extends javax.swing.JFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            String roleName=jTextFieldRoleName.getText().trim();
+            String roleName = jTextFieldRoleName.getText().trim();
             if (roleName.equals("")) {
                 JOptionPane.showMessageDialog(null, "Rolename can not be empty!");
                 jTextFieldRoleName.requestFocus();
-            }else{
-                DaoDatabaseRoles.insert(roleName);
-                DatabaseRoles.loadDatabaseRoles(DaoDatabaseRoles.getList());
+            } else {
+                DaoDatabaseRoles.insert(roleName, DatabaseRoles.currentDB);
+                DatabaseRoles.loadDatabaseRoles(DaoDatabaseRoles.getList(DatabaseRoles.currentDB));
             }
         }
     }//GEN-LAST:event_jButton3MouseClicked
