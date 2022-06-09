@@ -29,8 +29,8 @@ public class DaoLogin {
 
     public static List<Login> getList() {
         List<Login> list = new ArrayList<>();
-        String sql = "select loginname, u.name, dbname as defdb from sys.syslogins l inner join sys.sysusers u on l.sid = u.sid where uid != 1";
-//        String sql = "select loginname, name, dbname as defdb from sys.syslogins where sid != 1 and hasaccess = 1 and isntname = 0 and name not like '##%'";
+//        String sql = "select loginname, u.name, dbname as defdb from sys.syslogins l inner join sys.sysusers u on l.sid = u.sid where uid != 1";
+        String sql = "select loginname, name, dbname as defdb from sys.syslogins where sid != 1 and hasaccess = 1 and isntname = 0 and name not like '##%'";
         Connection connection = Connect.getConnect();
         Statement statement;
         ResultSet resultSet;
@@ -79,17 +79,18 @@ public class DaoLogin {
         }
     }
 
-    public static void delete(String loginName, String nameInDB) {
-        String sql = "exec sp_removeLogin ?, ?";
+    public static void delete(String loginName, String dbName, boolean showMessage) {
+//        String sql = "exec sp_removeLogin ?, ?";
+        String sql = "use [" + dbName + "] drop login [" + loginName + "]";
         Connection connection = Connect.getConnect();
-        CallableStatement cs;
+        Statement s;
         try {
-            cs = connection.prepareCall(sql);
-            cs.setString(1, loginName);
-            cs.setString(2, nameInDB);
-            cs.execute();
+            s = connection.createStatement();
+            s.execute(sql);
             ListLogin.loadListLogin(getList());
-            JOptionPane.showMessageDialog(null, "Success!");
+            if (showMessage) {
+                JOptionPane.showMessageDialog(null, "Success!");
+            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         } finally {

@@ -26,24 +26,46 @@ import server.Connect;
  */
 public class DaoRestore {
 
+    public static String generateWherePhysicalName(String pathBak) {
+        String physical_device_name = "";
+        String[] listPath = pathBak.split(";");
+        System.out.println("pathString after split");
+        for (int i = 0; i < listPath.length; i++) {
+            physical_device_name = physical_device_name.concat("physical_device_name = N'"
+                    + listPath[i] + "' ");
+            if (i != listPath.length - 1) {
+                physical_device_name = physical_device_name.concat(" or ");
+            }
+        }
+
+        System.out.println("end show pathString after split");
+        return physical_device_name;
+    }
+
     public static List<String> getDBNameFromBak(String pathBak) {
-//        String sql = "select distinct database_name as DatabaseName from msdb.dbo.backupset b "
-//                + "inner join msdb.dbo.backupmediafamily m on b.media_set_id = m.media_set_id "
-//                + " where physical_device_name = ?";
-        String sql = "RESTORE HEADERONLY FROM DISK = ?";
+        String sql = "select distinct database_name as DatabaseName from msdb.dbo.backupset b "
+                + "inner join msdb.dbo.backupmediafamily m on b.media_set_id = m.media_set_id "
+                + " where "; //physical_device_name = ?
+//        String sql = "RESTORE HEADERONLY FROM DISK = ?";
+
+        sql = sql.concat(generateWherePhysicalName(pathBak));
+
+        System.out.println(sql);
         List<String> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
-        PreparedStatement ps;
+//        PreparedStatement ps;
+        Statement ps;
         ResultSet rs;
         try {
-            ps = connection.prepareStatement(sql);
-            ps.setString(1, pathBak);
-            rs = ps.executeQuery();
+            ps = connection.createStatement();
+//            ps.setString(1, pathBak);
+            rs = ps.executeQuery(sql);
             while (rs.next()) {
                 list.add(rs.getString("DatabaseName"));
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
+            Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 connection.close();
@@ -63,7 +85,7 @@ public class DaoRestore {
         try {
             cs = connection.prepareCall(sql);
             cs.setString(1, dbName);
-            cs.setString(2, physical_device_name);
+            cs.setString(2, generateWherePhysicalName(physical_device_name));
             rs = cs.executeQuery();
             while (rs.next()) {
                 list.add(new BackupSet(
@@ -124,10 +146,10 @@ public class DaoRestore {
         }
     }
 
-    public static List<DatabaseFile> getDBFiles(String pathDisk) {
-//        String sql = "use [" + dbName
-//                + "] select type_desc, name, physical_name from sys.database_files";
-        String sql = "RESTORE FILELISTONLY  FROM DISK = '" + pathDisk + "'";
+    public static List<DatabaseFile> getDBFiles(String dbName) {
+        String sql = "use [" + dbName
+                + "] select type_desc as Type, name as LogicalName, physical_name as PhysicalName from sys.database_files";
+//        String sql = "RESTORE FILELISTONLY  FROM DISK = '" + pathDisk + "'";
         List<DatabaseFile> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
         Statement s;
@@ -138,9 +160,9 @@ public class DaoRestore {
             while (rs.next()) {
                 String type = "";
                 switch (rs.getString("Type")) {
-                    case "D" ->
+                    case "ROWS" ->
                         type = "Rows Data";
-                    case "L" ->
+                    case "LOG" ->
                         type = "Log";
                 }
                 list.add(new DatabaseFile(

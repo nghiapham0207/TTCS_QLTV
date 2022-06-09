@@ -46,6 +46,20 @@ public class ListLogin extends javax.swing.JInternalFrame {
         }
         tableListLogin.setModel(defaultTableModel);
     }
+    
+    private void deleteLogin(){
+        int row = tableListLogin.getSelectedRow();
+            if (row != -1) {
+                int option = JOptionPane.showConfirmDialog(null, "Do you want to delete this login?");
+                if (option == JOptionPane.YES_OPTION) {
+                    String loginName = (String) tableListLogin.getValueAt(row, 0);
+                    String nameInDB = (String) tableListLogin.getValueAt(row, 2);
+                    DaoLogin.delete(loginName, nameInDB, true);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "No row selected!");
+            }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -177,17 +191,7 @@ public class ListLogin extends javax.swing.JInternalFrame {
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
-            int row = tableListLogin.getSelectedRow();
-            if (row != -1) {
-                int option = JOptionPane.showConfirmDialog(null, "Do you want to delete this login?");
-                if (option == JOptionPane.YES_OPTION) {
-                    String loginName = (String) tableListLogin.getValueAt(row, 0);
-                    String nameInDB = (String) tableListLogin.getValueAt(row, 1);
-                    DaoLogin.delete(loginName, nameInDB);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "No row selected!");
-            }
+            deleteLogin();
         }
     }//GEN-LAST:event_jButton3MouseClicked
 
@@ -221,6 +225,9 @@ public class ListLogin extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
             tableListLogin.clearSelection();
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
+            deleteLogin();
         }
     }//GEN-LAST:event_tableListLoginKeyPressed
 

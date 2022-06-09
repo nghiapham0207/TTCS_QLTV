@@ -7,7 +7,6 @@ package view;
 
 import dao.DaoRestore;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
@@ -56,22 +55,24 @@ public class Restore extends javax.swing.JInternalFrame {
     public void loadComboBoxDBName(List<String> list) {
         if (!list.isEmpty()) {
             jComboBoxDBName.removeAllItems();
-            jComboBoxDBName.removeAllItems();
-
             list.forEach((String q) -> {
                 jComboBoxDBName.addItem(q);
             });
             jComboBoxDBName.setSelectedIndex(0);
         }
+//        if (!list.isEmpty()) {
+//            jComboBoxDBName.removeAllItems();
+//            for (String string : list) {
+//                jComboBoxDBName.addItem(string);
+//            }
+//            jComboBoxDBName.setSelectedIndex(0);
+//        }
     }
 
     private void loadDBFiles(List<DatabaseFile> list) {
         if (list.isEmpty()) {
             return;
         }
-
-        //restore into .mdf .ldf not .bak .trn
-        //tomorrow i am going to fix
         dtm = (DefaultTableModel) jTableDBFiles.getModel();
         dtm.setRowCount(0);
         File restoreAs;
@@ -109,11 +110,12 @@ public class Restore extends javax.swing.JInternalFrame {
 
     private void setTabFiles() {
         System.out.println("starting set tab Files");
-        String pathDisk = jTextFieldDevice.getText().trim();
+        String pathDisk = jTextFieldDevice.getText().trim().split(";")[0];
         System.out.println("load table database files");
         System.out.println("load file is only: " + pathDisk);
+        String dbName = (String) jComboBoxDBName.getSelectedItem();
         if (!pathDisk.isEmpty()) {
-            loadDBFiles(DaoRestore.getDBFiles(pathDisk));
+            loadDBFiles(DaoRestore.getDBFiles(dbName));
 
             //set tab files
             //reset
@@ -788,6 +790,7 @@ public class Restore extends javax.swing.JInternalFrame {
             jButton4.setBackground(new java.awt.Color(153, 184, 247));
             jButton1.setBackground(new java.awt.Color(214, 217, 223));
             jButton8.setBackground(new java.awt.Color(214, 217, 223));
+            
             setTabFiles();
         }
     }//GEN-LAST:event_jButton4MouseClicked
@@ -807,11 +810,20 @@ public class Restore extends javax.swing.JInternalFrame {
 
             if (option == JFileChooser.APPROVE_OPTION) {
                 File path = jfc.getSelectedFile();
+                File[] paths = jfc.getSelectedFiles();
+                System.out.println("multi files");
+                String pathString = "";
+                for (File path1 : paths) {
+                    System.out.println(path1);
+                    pathString = pathString.concat(path1.getPath() + ";");
+                }
+                jTextFieldDevice.setText(pathString);
+                System.out.println(jTextFieldDevice.getText());
                 if (path.isFile()) {
-                    jTextFieldDevice.setText(path.getPath());
+//                    jTextFieldDevice.setText(path.getPath());
 //                    System.out.println(DaoRestore.getDBNameFromBak(path.getPath()));
-
-                    loadComboBoxDBName(DaoRestore.getDBNameFromBak(path.getPath()));
+                    loadComboBoxDBName(DaoRestore.getDBNameFromBak(pathString));
+//                    loadComboBoxDBName(DaoRestore.getDBNameFromBak(path.getPath()));
 
                     String dbNameFromBak;
                     dbNameFromBak = (String) jComboBoxDBName.getSelectedItem();
@@ -822,7 +834,9 @@ public class Restore extends javax.swing.JInternalFrame {
                         String dbName = (String) jComboBoxDBName.getSelectedItem();
                         System.out.println(path.getPath());
                         loadBackupSets(
-                                DaoRestore.getBackupSets(dbName, path.getPath()));
+                                DaoRestore.getBackupSets(dbName, pathString));
+//                        loadBackupSets(
+//                                DaoRestore.getBackupSets(dbName, path.getPath()));
                         int rowCount = jTable1.getRowCount();
                         System.out.println("row count: " + rowCount);
                         if (rowCount != 0) {
@@ -866,7 +880,7 @@ public class Restore extends javax.swing.JInternalFrame {
 
                 boolean restore = (boolean) jTable1.getValueAt(row, 0);
                 String startDate;
-                
+
                 if (restore) {
                     startDate = (String) jTable1.getValueAt(row, 5);
                     jTextFieldTimeLine.setText(startDate);
@@ -876,10 +890,10 @@ public class Restore extends javax.swing.JInternalFrame {
                 } else {
                     if (row == 0) {
                         startDate = (String) jTable1.getValueAt(row, 5);
-                    }else{
+                    } else {
                         startDate = (String) jTable1.getValueAt(row - 1, 5);
                     }
-                    
+
                     jTextFieldTimeLine.setText(startDate);
                     for (int i = row; i < jTable1.getRowCount(); i++) {
                         jTable1.setValueAt(false, i, 0);
@@ -923,6 +937,8 @@ public class Restore extends javax.swing.JInternalFrame {
 //            if (dbNameFromBak != null) {
 //                loadDBFiles(DaoRestore.getDBFiles(dbNameFromBak));
 //            }
+
+            setTabFiles();
         }
     }//GEN-LAST:event_jComboBoxDBNameItemStateChanged
 

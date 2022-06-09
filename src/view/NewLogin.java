@@ -9,10 +9,15 @@ import dao.DaoDatabase;
 import dao.DaoLogin;
 import static dao.DaoLogin.getList;
 import java.awt.CardLayout;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import model.UserMapping;
 
 /**
@@ -100,8 +105,8 @@ public class NewLogin extends javax.swing.JFrame {
         }
         return count;
     }
-    
-    private void defaultUserName(String loginName){
+
+    private void defaultUserName(String loginName) {
         boolean mapped;
         for (int i = 0; i < jTable1.getRowCount(); i++) {
             mapped = (boolean) jTable1.getValueAt(i, 0);
@@ -355,14 +360,34 @@ public class NewLogin extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class
             };
+            boolean[] canEdit = new boolean [] {
+                true, false, true
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTable1FocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTable1FocusLost(evt);
             }
         });
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
+            }
+        });
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTable1KeyPressed(evt);
             }
         });
         jScrollPane1.setViewportView(jTable1);
@@ -507,8 +532,8 @@ public class NewLogin extends javax.swing.JFrame {
 //            String defDB = jComboBoxDefDB.getSelectedItem().toString();
 //            DaoLogin.insert(name, pw, defDB, policy, exp, mustChange);
 
-            defaultUserName(loginName);
             if (isUserNameEmpty()) {
+                System.out.println("username empty: " + isUserNameEmpty());
                 defaultUserName(loginName);
             }
             String execStmt = generateSQLAddLogin();
@@ -529,7 +554,11 @@ public class NewLogin extends javax.swing.JFrame {
                 if (!hasError) {
                     ListLogin.loadListLogin(getList());
                     JOptionPane.showMessageDialog(null, "Success!");
+                } else {
+                    String dbName = (String) jComboBoxDefDB.getSelectedItem();
+                    DaoLogin.delete(loginName, dbName, false);
                 }
+                //delete
             }
         }
     }//GEN-LAST:event_jButtonOKMouseClicked
@@ -565,6 +594,23 @@ public class NewLogin extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusLost
+        // TODO add your handling code here:
+        if (jTable1.isEditing()) {
+            jTable1.getCellEditor().stopCellEditing();
+        }
+    }//GEN-LAST:event_jTable1FocusLost
+
+    private void jTable1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusGained
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jTable1FocusGained
+
+    private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_jTable1KeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
