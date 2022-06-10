@@ -5,3 +5,4 @@
 	+ Chạy file QLTV_FULL.sql hoặc file QLTV_SCHEMA.sql trong thư mục sql server
 	+ Kiểm tra username, password và tên cơ sở dữ liệu trong file connection.properties
 	+ Dùng Apache Netbean IDE để chạy project hoặc chạy file TTCS_QLTV.jar trong thư mục dist
+	+ Nếu chạy bằng file .jar nhớ bỏ file connection.properties vào thư mục dist nếu chưa có

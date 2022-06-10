@@ -52,6 +52,7 @@ begin
 end
 
 go
+--không dùng
 create proc sp_getlistmember
 @role_name sysname
 as
@@ -64,6 +65,7 @@ end
 
 --create view
 go
+--không dùng
 create view v_membertoadd
 as
 select name, 'User' as [type] from sys.sysusers where issqlrole = 0 and uid not in (1, 3, 4)
@@ -110,6 +112,7 @@ begin
 end
 
 go
+--sai không dùng
 alter proc sp_backupsets
 @dbname nvarchar(128),
 @physical_device_name nvarchar(128)
