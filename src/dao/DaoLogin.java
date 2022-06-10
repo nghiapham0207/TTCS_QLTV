@@ -148,7 +148,7 @@ public class DaoLogin {
             System.out.println(sql);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
-            Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
             NewLogin.hasError = true;
         } finally {
             try {

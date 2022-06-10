@@ -293,7 +293,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
             if (row != -1) {
                 String roleName = (String) jTableDatabaseRoles.getValueAt(row, 0);
                 jTextFieldRoleName.setText(roleName);
-                loadListMembersOfRole(DaoMembers.getList(roleName));
+                loadListMembersOfRole(DaoMembers.getList(roleName, currentDB));
             }
         }
     }//GEN-LAST:event_jTableDatabaseRolesMouseClicked
@@ -307,8 +307,8 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
                 if (option == JOptionPane.YES_OPTION) {
                     String roleName = jTextFieldRoleName.getText().trim();
                     String memberName = (String) jTableListMembers.getValueAt(row, 0);
-                    DaoDatabaseRoles.removeMember(roleName, memberName);
-                    loadListMembersOfRole(DaoMembers.getList(roleName));
+                    DaoDatabaseRoles.removeMember(roleName, memberName, currentDB);
+                    loadListMembersOfRole(DaoMembers.getList(roleName, currentDB));
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "No member selected!");
@@ -350,7 +350,7 @@ public class DatabaseRoles extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getButton() == MouseEvent.BUTTON1) {
             String roleName = jTextFieldRoleName.getText().trim();
-            loadListMembersOfRole(DaoMembers.getList(roleName));
+            loadListMembersOfRole(DaoMembers.getList(roleName, currentDB));
         }
     }//GEN-LAST:event_jButtonRefreshMouseClicked
 

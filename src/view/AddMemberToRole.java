@@ -190,7 +190,7 @@ public class AddMemberToRole extends javax.swing.JFrame {
             for (Member addMember : addMembers) {
                 System.out.println(addMember.getName());
             }
-            DaoDatabaseRoles.addMember(roleName, addMembers);
+            DaoDatabaseRoles.addMember(roleName, addMembers, DatabaseRoles.currentDB);
             this.dispose();
         }
     }//GEN-LAST:event_jButtonOKMouseClicked

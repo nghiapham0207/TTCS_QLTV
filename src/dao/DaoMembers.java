@@ -8,7 +8,6 @@ package dao;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
 import java.sql.CallableStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -24,8 +23,12 @@ import server.Connect;
  */
 public class DaoMembers {
 
-    public static List<String> getList(String roleName) {
-        String sql = "exec sp_getlistmember ?";
+    public static List<String> getList(String roleName, String dbName) {
+//        String sql = "exec sp_getlistmember ?";
+        String sql = "use [" + dbName + "] select m.name as [Role Members] from sys.database_role_members rm"
+                + "\tinner join sys.database_principals r on rm.role_principal_id = r.principal_id"
+                + "\tinner join sys.database_principals m on rm.member_principal_id = m.principal_id"
+                + "\twhere r.name = ?";
         List<String> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
         CallableStatement cs;

@@ -32,11 +32,11 @@ begin
 
 	exec (@exec_stmt) --ok
 
-	set @exec_stmt = ''
+	--set @exec_stmt = ''
 
-	set @exec_stmt = 'create user '+quotename(@loginame) + ' for login '+quotename(@loginame)
+	--set @exec_stmt = 'create user '+quotename(@loginame) + ' for login '+quotename(@loginame)
 
-	exec (@exec_stmt)
+	--exec (@exec_stmt)
 	--exec sp_grantdbaccess @loginame, @loginame
 end
 
@@ -127,13 +127,13 @@ as backuptype, physical_device_name, database_name, position, backup_start_date,
 from msdb.dbo.backupset
 INNER JOIN msdb.dbo.backupmediafamily ON backupset.media_set_id = backupmediafamily.media_set_id
 where 
-database_name = ' + @dbname + ' and (' + @physical_device_name + ')
+database_name = '' + @dbname + '' and (' + @physical_device_name + ')
 and backup_finish_date >= (select top 1 backup_finish_date
                              from msdb.dbo.backupset b1
-                             where b1.database_name = '+@dbname+' AND
+                             where b1.database_name = ''+@dbname+'' AND
                                b1.type = ''D''
                              order by b1.backup_finish_date desc)
 order by [type], backup_finish_date'
 exec (@exec_stmt)
-
+print(@exec_stmt)
 end

@@ -48,8 +48,8 @@ public class DaoDatabaseRoles {
         return list;
     }
 
-    public static void removeMember(String roleName, String memberName) {
-        String sql = "exec sp_droprolemember ?, ?";
+    public static void removeMember(String roleName, String memberName, String dbName) {
+        String sql = "use [" + dbName + "] exec sp_droprolemember ?, ?";
         Connection connection;
         CallableStatement cs;
         connection = Connect.getConnect();
@@ -95,8 +95,9 @@ public class DaoDatabaseRoles {
         }
     }
 
-    public static void addMember(String roleName, List<Member> list) {
-        String sql = "exec sp_addrolemember ?, ?";
+    public static void addMember(String roleName, List<Member> list, String dbName) {
+//        String sql = "USE ["+dbName+ "]" + " GO " + "ALTER ROLE [" + roleName + "] ADD MEMBER [?]";
+        String sql = "use [" + dbName + "] exec sp_addrolemember ?, ?";
         Connection connection;
         CallableStatement cs;
         connection = Connect.getConnect();

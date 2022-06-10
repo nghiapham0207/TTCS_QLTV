@@ -113,6 +113,7 @@ public class Restore extends javax.swing.JInternalFrame {
         String pathDisk = jTextFieldDevice.getText().trim().split(";")[0];
         System.out.println("load table database files");
         System.out.println("load file is only: " + pathDisk);
+        //get files by db name
         String dbName = (String) jComboBoxDBName.getSelectedItem();
         if (!pathDisk.isEmpty()) {
             loadDBFiles(DaoRestore.getDBFiles(dbName));

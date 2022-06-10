@@ -7,7 +7,7 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+//import java.sql.PreparedStatement;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,7 +29,7 @@ public class DaoRestore {
     public static String generateWherePhysicalName(String pathBak) {
         String physical_device_name = "";
         String[] listPath = pathBak.split(";");
-        System.out.println("pathString after split");
+        System.out.println("start pathString after split");
         for (int i = 0; i < listPath.length; i++) {
             physical_device_name = physical_device_name.concat("physical_device_name = N'"
                     + listPath[i] + "' ");
@@ -37,7 +37,7 @@ public class DaoRestore {
                 physical_device_name = physical_device_name.concat(" or ");
             }
         }
-
+        System.out.println(physical_device_name);
         System.out.println("end show pathString after split");
         return physical_device_name;
     }
@@ -77,16 +77,39 @@ public class DaoRestore {
     }
 
     public static List<BackupSet> getBackupSets(String dbName, String physical_device_name) {
-        String sql = "exec sp_backupsets ?, ?";
+//        String sql = "exec sp_backupsets ?, ?";
+        String path = generateWherePhysicalName(physical_device_name);
+        //poor
+        String sql = "SELECT case [type]"
+                + "		when 'D' then 'Full'"
+                + "		when 'I' then 'Differential'"
+                + "		when 'L' then 'Transaction Log'"
+                + "		else [type]"
+                + "	end "
+                + "as backuptype, physical_device_name, database_name, position, backup_start_date, backup_finish_date "
+                + "FROM msdb.dbo.backupset "
+                + "  INNER JOIN msdb.dbo.backupmediafamily ON backupset.media_set_id = backupmediafamily.media_set_id "
+                + "WHERE database_name = N'" + dbName + "' and "
+                + "(" + path
+                + ")  and backup_finish_date >= (SELECT TOP 1 backup_finish_date "
+                + " FROM msdb.dbo.backupset b1 "
+                + " WHERE b1.database_name = N'" + dbName + "' AND"
+                + " b1.type = 'D'"
+                + " ORDER BY b1.backup_finish_date DESC)"
+                + "ORDER BY [type], backup_finish_date";
+        System.out.println("get backup sets");
+        System.out.println(sql);
         List<BackupSet> list = new ArrayList<>();
         Connection connection = Connect.getConnect();
-        CallableStatement cs;
+//        CallableStatement cs;
+        Statement s;
         ResultSet rs;
         try {
-            cs = connection.prepareCall(sql);
-            cs.setString(1, dbName);
-            cs.setString(2, generateWherePhysicalName(physical_device_name));
-            rs = cs.executeQuery();
+//            cs = connection.prepareCall(sql);
+//            cs.setString(1, dbName);
+//            cs.setString(2, generateWherePhysicalName(physical_device_name));
+            s = connection.createStatement();
+            rs = s.executeQuery(sql);
             while (rs.next()) {
                 list.add(new BackupSet(
                         true,
