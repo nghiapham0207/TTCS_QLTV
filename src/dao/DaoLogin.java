@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import model.Login;
 import server.Connect;
-import view.Backup;
+//import view.Backup;
 import view.ListLogin;
 import view.NewLogin;
 

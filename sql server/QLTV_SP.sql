@@ -1,6 +1,6 @@
 ﻿use QLTV
 go
-create proc sp_newLogin
+alter proc sp_newLogin
 @loginame nvarchar(128),
 @pwd sysname = Null,
 @defdb sysname = 'master',

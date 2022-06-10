@@ -51,7 +51,7 @@ public class DaoMembers {
         }
         return list;
     }
-
+    //get user and db role
     public static List<Member> getListMemberToAdd(String dbName) {
 //        String sql="select * from v_membertoadd";
         String sql = "use [" + dbName
