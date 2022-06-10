@@ -81,17 +81,16 @@ public class DaoRestore {
         String path = generateWherePhysicalName(physical_device_name);
         //poor
         String sql = "SELECT case [type]"
-                + "		when 'D' then 'Full'"
-                + "		when 'I' then 'Differential'"
-                + "		when 'L' then 'Transaction Log'"
-                + "		else [type]"
-                + "	end "
+                + " when 'D' then 'Full'"
+                + " when 'I' then 'Differential'"
+                + " when 'L' then 'Transaction Log'"
+                + " else [type]"
+                + " end "
                 + "as backuptype, physical_device_name, database_name, position, backup_start_date, backup_finish_date "
                 + "FROM msdb.dbo.backupset "
                 + "  INNER JOIN msdb.dbo.backupmediafamily ON backupset.media_set_id = backupmediafamily.media_set_id "
                 + "WHERE database_name = N'" + dbName + "' and "
-                + "(" + path
-                + ")  and backup_finish_date >= (SELECT TOP 1 backup_finish_date "
+                + "(" + path + ")  and backup_finish_date >= (SELECT TOP 1 backup_finish_date "
                 + " FROM msdb.dbo.backupset b1 "
                 + " WHERE b1.database_name = N'" + dbName + "' AND"
                 + " b1.type = 'D'"
