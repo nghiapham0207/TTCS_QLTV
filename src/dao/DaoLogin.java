@@ -41,6 +41,7 @@ public class DaoLogin {
                 list.add(new Login(resultSet.getString("loginname"), resultSet.getString("name"), resultSet.getString("defdb")));
             }
         } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Can NOT get list login!");
             Logger.getLogger(DaoLogin.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
