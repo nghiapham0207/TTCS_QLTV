@@ -132,7 +132,7 @@ public class DaoLogin {
             s = connection.createStatement();
             s.execute(execStmt);
         } catch (SQLException ex) {
-            Logger.getLogger(DaoRestore.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(DaoRestore.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex.getMessage());
             //có lỗi trong quá trình exec
             NewLogin.hasError = true;

@@ -47,8 +47,10 @@ public class Main extends javax.swing.JFrame {
         setTitle("Admin");
         setPreferredSize(new java.awt.Dimension(1000, 600));
 
+        jToolBar1.setBackground(new java.awt.Color(226, 236, 240));
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
+        jToolBar1.setToolTipText("");
         jToolBar1.setPreferredSize(new java.awt.Dimension(100, 60));
 
         jButton1.setText("Create Login");
@@ -104,6 +106,8 @@ public class Main extends javax.swing.JFrame {
         jToolBar1.add(jButton4);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+
+        jTabbedPane1.setOpaque(true);
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         pack();

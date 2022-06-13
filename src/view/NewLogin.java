@@ -9,15 +9,15 @@ import dao.DaoDatabase;
 import dao.DaoLogin;
 import static dao.DaoLogin.getList;
 import java.awt.CardLayout;
-import java.awt.event.KeyEvent;
+//import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import javax.swing.DefaultCellEditor;
+//import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+//import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
+//import javax.swing.table.TableCellEditor;
+//import javax.swing.table.TableColumn;
 import model.UserMapping;
 
 /**
@@ -428,8 +428,8 @@ public class NewLogin extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE))
                 .addContainerGap())

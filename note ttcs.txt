@@ -1,0 +1,38 @@
+1. TẠO ROLE 
+	- tạo role từ csdl, kiểm tra xem role đó đã có chưa, csdl đã thấy chưa
+	- tạo role từ ứng dụng, csdl check
+	- xóa role từ csdl và ứng dụng
+2. TẠO USER
+	- TẠO 2 CSDL và ứng dụng
+	- xóa user từ csdl và ứng dụng
+3. CẤP QUYỀN CHO ROLE
+	- cấp quyền full db từ csdl
+	- cấp quyền full db từ ứng dụng
+	- thu hồi quyền từ csdl
+	- thu hồi quyền từ ứng dụng 
+	- cấp full quyền cho table nào đó từ csdl
+	- cấp full quyền cho table nào đó từ ứng dụng
+	- thu hồi toàn bộ quyền của table đó trên csdl
+	- thu hồi toàn bộ quyền của table đó trên ứng dụng
+	- cấp quyền xem cho 1 table từ csdl 
+	- cấp quyền xem cho 1 table từ ứng dụng
+	- cấp quyền update cho table , thu hồi update 2 nơi
+	- cấp quyền xem, thu hồi xem 2 nơi
+	- cấp quyền thực thi, thu hồi quyền thực thi 2 nơi
+4. ĐƯA USER VÀO ROLE
+	- check trên user vs các quyền đã cấp của role
+5. CHUYỂN USER SANG ROLE KHÁC 
+	- kiểm tra quyền của user có thuộc role khác hay không 
+6. XÓA USER RA KHỎI ROLE
+7. THAY ĐỔI MẬT KHẨU
+
+8. TẠO TRIGGER
+9. BACKUP DATABASE
+	- backup full database, restore full database
+	- backup different, restore different 
+	- backup auto, restore để kiểm tra
+	
+
+
+	
+	
