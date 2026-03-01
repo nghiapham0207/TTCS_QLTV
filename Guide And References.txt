@@ -6,3 +6,6 @@
 	+ Kiểm tra username, password và tên cơ sở dữ liệu trong file connection.properties
 	+ Dùng Apache Netbean IDE để chạy project hoặc chạy file TTCS_QLTV.jar trong thư mục dist
 	+ Nếu chạy bằng file .jar nhớ bỏ file connection.properties vào thư mục dist nếu chưa có
+- Tham khảo:
+	+ https://www.c-sharpcorner.com/UploadFile/ff0d0f/backup-and-its-type-in-sql-server/#:~:text=NoRewind%3A%20Tells%20SQL%20Server%20to,file%20when%20written%20to%20disk.
+	+ https://www.mssqltips.com/sqlservertip/6042/sql-server-backup-and-restore-history-queries/
